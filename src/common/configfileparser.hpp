@@ -17,10 +17,11 @@
 
 #include <filesystem>
 #include <memory>
-#include <sstream>
 #include <string>
 #include <vector>
 #include <json/json.h>
+#include <fmt/format.h>
+#include <fmt/ostream.h>
 
 #include "common/cmdargparser-exceptions.hpp"
 
@@ -62,31 +63,29 @@ struct OptionMapEntry
 
     friend std::ostream &operator<<(std::ostream &os, const OptionMapEntry &e)
     {
-        std::stringstream out;
+        std::string out;
         if (e.present)
         {
-            out << e.description << ": ";
             switch (e.type)
             {
             case OptionValueType::Int:
             case OptionValueType::String:
-                out << e.value;
+                out = fmt::format("{}: {}\n", e.description, e.value);
                 break;
 
             case OptionValueType::Present:
                 if (e.present)
                 {
-                    out << (e.present_value ? "Yes" : "No");
+                    out = fmt::format("{}: {}\n", e.description, e.present_value ? "Yes" : "No");
                 }
                 else
                 {
-                    out << "(not set)";
+                    out = fmt::format("{}: (not set)\n", e.description);
                 }
                 break;
             }
-            out << std::endl;
         }
-        return os << out.str();
+        return os << out;
     }
 
 
@@ -267,12 +266,12 @@ class File
      */
     friend std::ostream &operator<<(std::ostream &os, const File &m)
     {
-        std::stringstream out;
+        std::string out;
         for (auto &e : m.map)
         {
-            out << e;
+            out += fmt::format("{}", e);
         }
-        return os << out.str();
+        return os << out;
     }
 
 
@@ -306,4 +305,35 @@ class File
     void configure_mapping();
 
 }; // class File
+
 } // namespace Configuration
+
+
+/**
+ *  libfmt / fmt::format support, wrapping
+ *  Configuration::OptionMap::operator<<()
+ */
+template <>
+struct fmt::formatter<Configuration::OptionMapEntry> : fmt::ostream_formatter
+{
+};
+
+
+/**
+ *  libfmt / fmt::format support, wrapping
+ *  Configuration::OptionMap::operator<<()
+ */
+template <>
+struct fmt::formatter<Configuration::OptionMap> : fmt::ostream_formatter
+{
+};
+
+
+/**
+ *  libfmt / fmt::format support, wrapping
+ *  Configuration::File::operator<<()
+ */
+template <>
+struct fmt::formatter<Configuration::File> : fmt::ostream_formatter
+{
+};
