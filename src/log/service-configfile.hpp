@@ -17,6 +17,7 @@
 
 #include <memory>
 #include <string>
+#include <fmt/ostream.h>
 #include "common/configfileparser.hpp"
 
 using namespace Configuration;
@@ -78,4 +79,13 @@ class LogServiceConfigFile : public virtual Configuration::File
             // clang-format on
         };
     }
+};
+
+/**
+ *  libfmt / fmt::format support, wrapping
+ *  LogServiceConfigFile::operator<<() (via Configuration::File)
+ */
+template <>
+struct fmt::formatter<LogServiceConfigFile> : fmt::ostream_formatter
+{
 };

@@ -12,6 +12,8 @@
  * @brief  Command for managing the openvpn3-service-log
  */
 
+#include <fmt/compile.h>
+#include <fmt/format.h>
 #include <gdbuspp/connection.hpp>
 #include <gdbuspp/credentials/query.hpp>
 
@@ -44,8 +46,7 @@ static int manage_config_file(DBus::Connection::Ptr dbuscon,
             {
                 config_file = args->GetLastValue("config-file-override");
             }
-            std::cout << "Loading configuration file: " << config_file
-                      << std::endl;
+            fmt::println("Loading configuration file: {}", config_file);
             config.Load(config_file);
 
             if ((config.IsPresent("syslog") || config.IsPresent("journald"))
@@ -59,35 +60,32 @@ static int manage_config_file(DBus::Connection::Ptr dbuscon,
         {
             if ("config-show" == cfgmode)
             {
-                std::cout << excp.what()
-                          << std::endl;
+                fmt::println("{}", excp.what());
                 return 2;
             }
         }
         catch (const ExclusiveOptionError &err)
         {
-            std::cerr << std::endl
-                      << "==================================="
-                      << "==================================="
-                      << std::endl;
-            std::cerr << "An error was found in the configuration file:"
-                      << std::endl;
-            std::cerr << " *** " << err.what() << std::endl;
-            std::cerr << "==================================="
-                      << "==================================="
-                      << std::endl
-                      << std::endl;
+            int width = 70;
+            fmt::print(stderr,
+                       "\n{0:=<{1}}\n"
+                       "An error was found in the configuration file:\n"
+                       " *** {2}"
+                       "\n{0:=<{1}}\n\n",
+                       "",
+                       width,
+                       err.what());
         }
 
         if ("config-show" == cfgmode)
         {
             if (!config.empty())
             {
-                std::cout << config;
+                fmt::print("{}", config);
             }
             else
             {
-                std::cout << "Configuration file is empty" << std::endl;
+                fmt::print(stderr, "Configuration file is empty\n");
             }
         }
         else if ("config-set" == cfgmode
@@ -134,18 +132,17 @@ static int manage_config_file(DBus::Connection::Ptr dbuscon,
             {
                 config.CheckExclusiveOptions();
                 config.Save(config_file);
-                std::cout << "Configuration file updated.  "
-                          << "Changes will be activated next time "
-                          << "openvpn3-service-log restarts"
-                          << std::endl;
+                fmt::print("Configuration file updated.  "
+                           "Changes will be activated next time "
+                           "openvpn3-service-log restarts\n");
             }
             catch (const ExclusiveOptionError &err)
             {
-                std::cerr << "Configuration NOT changed due to the "
-                          << "following error:" << std::endl
-                          << std::endl;
-                std::cerr << " *** " << err.what() << std::endl
-                          << std::endl;
+                fmt::print(stderr,
+                           "Configuration NOT changed due to the "
+                           "following error:\n\n"
+                           " *** {}\n\n",
+                           err.what());
             }
         }
     }
@@ -166,18 +163,17 @@ static void logsrv_list_subscriptions(DBus::Connection::Ptr dbuscon,
 
     if (list.size() == 0)
     {
-        std::cout << "No attached log subscriptions" << std::endl;
+        fmt::print("No attached log subscriptions\n");
         return;
     }
 
-    std::cout << "Tag" << std::setw(22) << " "
-              << "PID" << std::setw(4) << " "
-              << "Bus name" << std::setw(4) << " "
-              << "Interface" << std::setw(25) << " "
-              << "Object path" << std::endl;
-    std::cout << std::setw(120) << std::setfill('-')
-              << "-" << std::endl;
-    std::cout << std::setfill(' ');
+    fmt::print("{1:<24} {2:<6} {3:<11} {4:<33} {5}\n{0:-<120}\n",
+               "",
+               "Tag",
+               "PID",
+               "Bus name",
+               "Interface",
+               "Object path");
 
     for (const auto &e : list)
     {
@@ -191,18 +187,18 @@ static void logsrv_list_subscriptions(DBus::Connection::Ptr dbuscon,
             pid = "-";
         }
 
-        std::cout << e.tag << std::setw(25 - e.tag.length()) << " "
-                  << pid << std::setw(7 - pid.length()) << " "
-                  << e.busname << std::setw(12 - e.busname.length()) << " "
-                  << e.interface << std::setw(34 - e.interface.length()) << " "
-                  << e.object_path << std::endl;
+        fmt::print(FMT_COMPILE("{0:<24} {1:<6} {2:<11} {3:<33} {4}\n"),
+                   e.tag,
+                   pid,
+                   e.busname,
+                   e.interface,
+                   e.object_path);
     }
-    std::cout << std::setw(120) << std::setfill('-')
-              << "-" << std::endl;
+    fmt::println("{0:-<120}", "");
 }
 
 
-static inline std::string print_change(const bool changed, const bool oldval)
+static std::string print_change(const bool changed, const bool oldval)
 {
     if (changed)
     {
@@ -214,7 +210,7 @@ static inline std::string print_change(const bool changed, const bool oldval)
 }
 
 
-static inline std::string print_change(const bool changed, const unsigned int oldval)
+static std::string print_change(const bool changed, const unsigned int oldval)
 {
     if (changed)
     {
@@ -229,37 +225,41 @@ static inline std::string print_change(const bool changed, const unsigned int ol
 static void print_logger_settings(LogServiceProxy::Ptr logsrvprx)
 {
     std::string log_method = logsrvprx->GetLogMethod();
-    std::cout << "                 Log method: "
-              << log_method << std::endl;
-    std::cout << " Attached log subscriptions: "
-              << logsrvprx->GetNumAttached() << std::endl;
 
-    std::cout << "             Log timestamps: "
-              << (logsrvprx->GetTimestampFlag() ? "enabled" : "disabled")
-              << print_change(logsrvprx->CheckChange(LogServiceProxy::Changed::TSTAMP),
-                              logsrvprx->GetTimestampFlag(true))
-              << std::endl;
+    fmt::print("{0:>27}: {1}\n"
+               "{2:>27}: {3}\n"
+               "{4:>27}: {5}{6}\n",
+               "Log method",
+               logsrvprx->GetLogMethod(),
+               "Attached log subscriptions",
+               logsrvprx->GetNumAttached(),
+               "Log timestamps",
+               (logsrvprx->GetTimestampFlag() ? "enabled" : "disabled"),
+               print_change(logsrvprx->CheckChange(LogServiceProxy::Changed::TSTAMP),
+                            logsrvprx->GetTimestampFlag(true)));
 
     if ("journald" == log_method)
     {
-        std::cout << "     Log tag prefix enabled: "
-                  << (logsrvprx->GetLogTagPrepend() ? "enabled" : "disabled")
-                  << print_change(logsrvprx->CheckChange(LogServiceProxy::Changed::LOGTAG_PREFIX),
-                                  logsrvprx->GetLogTagPrepend(true))
-                  << std::endl;
+        fmt::println("{0:>27}: {1}{2}",
+                     "Log tag prefix enabled",
+                     (logsrvprx->GetLogTagPrepend() ? "enabled" : "disabled"),
+                     print_change(logsrvprx->CheckChange(LogServiceProxy::Changed::LOGTAG_PREFIX),
+                                  logsrvprx->GetLogTagPrepend(true)));
     }
 
-    std::cout << "          Log D-Bus details: "
-              << (logsrvprx->GetDBusDetailsLogging() ? "enabled" : "disabled")
-              << print_change(logsrvprx->CheckChange(LogServiceProxy::Changed::DBUS_DETAILS),
-                              logsrvprx->GetDBusDetailsLogging(true))
-              << std::endl;
+    fmt::println("{0:>27}: {1}{2}",
+                 "Log D-Bus details",
+                 (logsrvprx->GetDBusDetailsLogging() ? "enabled" : "disabled"),
+                 print_change(logsrvprx->CheckChange(LogServiceProxy::Changed::DBUS_DETAILS),
+                              logsrvprx->GetDBusDetailsLogging(true)));
 
-    std::cout << "          Current log level: " << std::to_string(logsrvprx->GetLogLevel())
-              << print_change(logsrvprx->CheckChange(LogServiceProxy::Changed::LOGLEVEL),
-                              logsrvprx->GetLogLevel(true))
-              << std::endl;
+    fmt::println("{0:>27}: {1}{2}",
+                 "Current log level",
+                 logsrvprx->GetLogLevel(),
+                 print_change(logsrvprx->CheckChange(LogServiceProxy::Changed::LOGLEVEL),
+                              logsrvprx->GetLogLevel(true)));
 }
+
 
 /**
  *  openvpn3 log-service
