@@ -14,6 +14,8 @@
  */
 
 #include <csignal>
+#include <fmt/compile.h>
+#include <fmt/format.h>
 
 #include "common/open-uri.hpp"
 #include "helpers.hpp"
@@ -58,7 +60,7 @@ ExitReason exit_reason = ExitReason::NONE;
 static void sigint_handler(int sig)
 {
     exit_reason = ExitReason::CTRL_C;
-    std::cout << "!!" << std::endl;
+    fmt::println("!!");
 }
 
 
@@ -68,29 +70,25 @@ bool start_url_auth(const std::string &url)
     switch (r->status)
     {
     case OpenURIstatus::INVALID:
-        std::cout << "** ERROR **  The server requested an invalid URL: "
-                  << url << std::endl;
+        fmt::println("** ERROR **  The server requested an invalid URL: {}", url);
         return false;
 
     case OpenURIstatus::FAIL:
-        std::cout << "Could not open the URL automatically." << std::endl
-                  << "Open this URL to complete the connection: " << std::endl
-                  << "     " << url << std::endl
-                  << std::endl
-                  << "Further manage this session using 'openvpn3 session-auth'"
-                  << std::endl;
+        fmt::print("Could not open the URL automatically.\n"
+                   "Open this URL to complete the connection:\n"
+                   "     {}\n\n"
+                   "Further manage this session using 'openvpn3 session-auth'\n",
+                   url);
         return true;
 
     case OpenURIstatus::SUCCESS:
-        std::cout << "Session running, awaiting external authentication." << std::endl
-                  << "Further manage this session using "
-                  << "'openvpn3 session-manage' and 'openvpn3 session-auth'"
-                  << std::endl;
+        fmt::print("Session running, awaiting external authentication.\n"
+                   "Further manage this session using "
+                   "'openvpn3 session-manage' and 'openvpn3 session-auth'\n");
         return true;
 
     default:
-        std::cout << "** ERROR **  Unknown error occurred." << std::endl
-                  << r->message << std::endl;
+        fmt::print("** ERROR **  Unknown error occurred.\n{}\n", r->message);
         return false;
     }
 }
@@ -126,7 +124,7 @@ bool query_user_input(SessionManager::Proxy::Session::Ptr session,
                     {
                         try
                         {
-                            std::cout << r.user_description << ": ";
+                            fmt::print("{}: ", r.user_description);
                             if (r.hidden_input)
                             {
                                 set_console_echo(false);
@@ -134,7 +132,7 @@ bool query_user_input(SessionManager::Proxy::Session::Ptr session,
                             std::getline(std::cin, r.value);
                             if (r.hidden_input)
                             {
-                                std::cout << std::endl;
+                                fmt::println("");
                                 set_console_echo(true);
                             }
                             if (exit_reason == ExitReason::NONE)
@@ -150,8 +148,8 @@ bool query_user_input(SessionManager::Proxy::Session::Ptr session,
                             {
                                 if (ExitReason::CTRL_C != exit_reason)
                                 {
-                                    std::cerr << "** ERROR **   "
-                                              << "Empty input not allowed" << std::endl;
+                                    fmt::println("** ERROR **   "
+                                                 "Empty input not allowed");
                                 }
                                 done = true;
                             }
@@ -173,7 +171,7 @@ bool query_user_input(SessionManager::Proxy::Session::Ptr session,
             || ExitReason::CTRL_C == exit_reason
             || ExitReason::ERROR == exit_reason)
         {
-            std::cerr << "** Aborted **" << std::endl;
+            fmt::println("** Aborted **");
             try
             {
                 session->Disconnect();
@@ -241,7 +239,7 @@ void start_session(SessionManager::Proxy::Session::Ptr session,
 
             if (background)
             {
-                std::cout << "Session is running in the background" << std::endl;
+                fmt::println("Session is running in the background");
                 return;
             }
 
@@ -267,7 +265,7 @@ void start_session(SessionManager::Proxy::Session::Ptr session,
                 }
                 if (s.Check(StatusMajor::SESSION, StatusMinor::SESS_AUTH_URL))
                 {
-                    std::cout << "Web based authentication required." << std::endl;
+                    fmt::println("Web based authentication required.");
                     if (start_url_auth(s.message))
                     {
                         return;
@@ -275,15 +273,15 @@ void start_session(SessionManager::Proxy::Session::Ptr session,
                     else
                     {
                         exit_reason = ExitReason::DONE;
-                        std::cout << "Disconnecting" << std::endl;
+                        fmt::println("Disconnecting");
                     }
                 }
                 else if (s.minor == StatusMinor::CONN_CONNECTED)
                 {
                     auto details = session->GetConnectedToInfo();
-                    std::cout << "Connected to " << details.server_ip
-                              << " (" << session->GetSessionName() << ")"
-                              << std::endl;
+                    fmt::println("Connected to {} ({})",
+                                 details.server_ip,
+                                 session->GetSessionName());
                     return;
                 }
                 else if (s.minor == StatusMinor::CONN_DISCONNECTED)
@@ -336,7 +334,7 @@ void start_session(SessionManager::Proxy::Session::Ptr session,
                     {
                         // Ignore any errors in this case
                     }
-                    std::cout << std::endl;
+                    fmt::println("");
                     throw SessionException("Session stopped");
                 }
 
@@ -345,12 +343,12 @@ void start_session(SessionManager::Proxy::Session::Ptr session,
             time_t now = time(0);
             if ((op_start + timeout) <= now)
             {
-                std::stringstream err;
-                err << "Failed to connect"
-                    << (timeout > 0 && (op_start + timeout) <= now ? " (timeout)" : "")
-                    << ": " << s << std::endl;
+                std::string err = fmt::format(
+                    "Failed to connect{}: {}\n",
+                    (timeout > 0 && (op_start + timeout) <= now ? " (timeout)" : ""),
+                    s);
                 session->Disconnect();
-                throw SessionException(err.str());
+                throw SessionException(err);
             }
         }
         catch (const SessionManager::Proxy::ReadyException &e)
@@ -366,7 +364,7 @@ void start_session(SessionManager::Proxy::Session::Ptr session,
                 // this function should exit regardless and the
                 // error message is handled in start_url_auth()
                 (void)start_url_auth(s.message);
-                std::cout << "Disconnecting" << std::endl;
+                fmt::println("Disconnecting");
                 return;
             }
             else if (!query_user_input(session, &sact))
@@ -380,13 +378,13 @@ void start_session(SessionManager::Proxy::Session::Ptr session,
         }
         catch (const DBus::Exception &err)
         {
-            std::stringstream errm;
             if (ExitReason::ERROR == exit_reason)
             {
                 std::string e = err.GetRawError();
-                errm << "Failed to start new session: "
-                     << e.substr(e.find("')] ") + 4);
-                throw SessionException(errm.str());
+                std::string errm = fmt::format(
+                    "Failed to start new session: {}",
+                    e.substr(e.find("')] ") + 4));
+                throw SessionException(errm);
             }
             // If a SIGINT was received, there will
             // be errors we should ignore; it's noise for
@@ -410,20 +408,17 @@ std::string statistics_plain(ConnectionStats &stats)
         return "";
     }
 
-    std::stringstream out;
-    out << std::endl
-        << "Connection statistics:" << std::endl;
+    std::string out;
+    out = fmt::format("\nConnection statistics:\n");
     for (auto &sd : stats)
     {
-        out << "     "
-            << sd.key
-            << std::setw(20 - sd.key.size()) << std::setfill('.') << "."
-            << std::setw(12) << std::setfill('.')
-            << sd.value
-            << std::endl;
+        out += fmt::format(
+            FMT_COMPILE("     {0:.<20}{1:.>12}\n"),
+            sd.key,
+            sd.value);
     }
-    out << std::endl;
-    return out.str();
+    out += "\n";
+    return out;
 }
 
 } // namespace ovpn3cli::session
