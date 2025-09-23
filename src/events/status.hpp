@@ -16,8 +16,10 @@
 #pragma once
 
 #include <cstdint>
-#include <sstream>
 #include <glib.h>
+#include <fmt/compile.h>
+#include <fmt/format.h>
+#include <fmt/ostream.h>
 #include <gdbuspp/exceptions.hpp>
 #include <gdbuspp/glib2/utils.hpp>
 #include <gdbuspp/signals/group.hpp>
@@ -138,37 +140,37 @@ struct Status
         {
             return os << "(No status)";
         }
-        else
+
+        std::string status_num;
+        std::string status_str;
+
+        status_num = "[";
+        if (s.print_mode & static_cast<uint8_t>(Status::PrintMode::MAJOR))
         {
-            std::stringstream status_num;
-            std::stringstream status_str;
-
-            status_num << "[";
-            if (s.check_print_mode(Status::PrintMode::MAJOR))
-            {
-                status_num << std::to_string(static_cast<unsigned>(s.major));
-                status_str << StatusMajor_str[static_cast<unsigned>(s.major)];
-            }
-            if (s.print_mode == Status::PrintMode::ALL)
-            {
-                status_num << ",";
-                status_str << ", ";
-            }
-            if (s.check_print_mode(Status::PrintMode::MINOR))
-            {
-                status_num << std::to_string(static_cast<unsigned>(s.minor));
-                status_str << StatusMinor_str[static_cast<unsigned>(s.minor)];
-            }
-            status_num << "] ";
-
-            return os << (s.show_numeric_status ? status_num.str() : "")
-                      << status_str.str()
-                      << (s.print_mode != Status::PrintMode::NONE
-                                  && !s.message.empty()
-                              ? ": "
-                              : "")
-                      << (!s.message.empty() ? s.message : "");
+            status_num += fmt::format(FMT_COMPILE("{}"), static_cast<unsigned>(s.major));
+            status_str += StatusMajor_str[static_cast<unsigned>(s.major)];
         }
+        if (s.print_mode == static_cast<uint8_t>(Status::PrintMode::ALL))
+        {
+            status_num += ",";
+            status_str += ", ";
+        }
+        if (s.print_mode & static_cast<uint8_t>(Status::PrintMode::MINOR))
+        {
+            status_num += fmt::format(FMT_COMPILE("{}"), static_cast<unsigned>(s.minor));
+            status_str += StatusMinor_str[static_cast<unsigned>(s.minor)];
+        }
+        status_num += "] ";
+
+        return os << fmt::format(
+                   FMT_COMPILE("{}{}{}{}"),
+                   (s.show_numeric_status ? status_num : ""),
+                   status_str,
+                   (s.print_mode != static_cast<uint8_t>(Status::PrintMode::NONE)
+                            && !s.message.empty()
+                        ? ": "
+                        : ""),
+                   (!s.message.empty() ? s.message : ""));
     }
 
 
@@ -191,3 +193,12 @@ struct Status
 };
 
 } // namespace Events
+
+/**
+ *  libfmt / fmt::format support, wrapping
+ *  Events::Status::operator<<()
+ */
+template <>
+struct fmt::formatter<Events::Status> : fmt::ostream_formatter
+{
+};

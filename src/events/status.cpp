@@ -15,7 +15,6 @@
 
 #include <algorithm>
 #include <cstdint>
-#include <sstream>
 #include <glib.h>
 #include <gdbuspp/exceptions.hpp>
 #include <gdbuspp/glib2/utils.hpp>
