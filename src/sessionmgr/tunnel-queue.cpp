@@ -120,7 +120,7 @@ const DBus::Object::Path NewTunnelQueue::AddTunnel(const std::string &config_pat
         GVariant *r = be_start->Call(Constants::GenPath("backends"),
                                      Constants::GenInterface("backends"),
                                      "StartClient",
-                                     glib2::Value::CreateTupleWrapped(session_token));
+                                     glib2::Value::Create(session_token));
         g_variant_unref(r);
 
         // The session path for this session is returned

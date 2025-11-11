@@ -427,7 +427,7 @@ GVariant *RequiresQueue::QueueCheckTypeGroupGVariant() const noexcept
                                           static_cast<uint32_t>(group)));
     }
     callbacks.RunCallback(CallbackType::CHECK_TYPE_GROUP);
-    return glib2::Builder::FinishWrapped(bld);
+    return glib2::Builder::Finish(bld);
 }
 
 
@@ -457,7 +457,7 @@ GVariant *RequiresQueue::QueueCheckGVariant(GVariant *parameters) const noexcept
 
     // Convert the std::vector to a GVariant based array GDBus can use
     // as the method call response
-    GVariant *ret = glib2::Value::CreateTupleWrapped<uint32_t>(QueueCheck(type, group));
+    GVariant *ret = glib2::Value::Create(QueueCheck(type, group));
     callbacks.RunCallback(CallbackType::QUEUE_CHECK);
     return ret;
 }

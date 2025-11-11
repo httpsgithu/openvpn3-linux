@@ -150,9 +150,9 @@ bool Status::operator!=(const Status &compare) const
 void Status::parse_dict(GVariant *status)
 {
     reset();
-    major = glib2::Value::Dict::Lookup<StatusMajor>(status, "major");
-    minor = glib2::Value::Dict::Lookup<StatusMinor>(status, "minor");
-    message = glib2::Value::Dict::Lookup<std::string>(status, "status_message");
+    major = glib2::Dict::Lookup<StatusMajor>(status, "major");
+    minor = glib2::Dict::Lookup<StatusMinor>(status, "minor");
+    message = glib2::Dict::Lookup<std::string>(status, "status_message");
 }
 
 

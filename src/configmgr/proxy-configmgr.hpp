@@ -654,7 +654,7 @@ class OpenVPN3ConfigurationProxy
         {
             proxy->Call(proxy_tgt,
                         "AddTag",
-                        glib2::Value::CreateTupleWrapped(tag));
+                        glib2::Value::Create(tag));
         }
         catch (const DBus::Exception &excp)
         {
@@ -686,7 +686,7 @@ class OpenVPN3ConfigurationProxy
         {
             proxy->Call(proxy_tgt,
                         "RemoveTag",
-                        glib2::Value::CreateTupleWrapped(tag));
+                        glib2::Value::Create(tag));
         }
         catch (const DBus::Exception &excp)
         {

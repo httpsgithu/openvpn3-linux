@@ -23,7 +23,7 @@ The following dependencies are needed:
 
   https://www.openssl.org/
 
-* GDBus++ v3 or newer
+* GDBus++ v4 or newer
 
   https://codeberg.org/OpenVPN/gdbuspp/
 
@@ -108,7 +108,7 @@ First install the package dependencies needed to run the build.
 
   For newer Debian and Ubuntu releases shipping with OpenSSL 1.1 or newer:
 
-      # apt-get install 
+      # apt-get install
 
 - Generic build requirements:
 

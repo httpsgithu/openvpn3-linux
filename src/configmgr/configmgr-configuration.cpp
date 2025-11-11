@@ -762,7 +762,7 @@ void Configuration::method_fetch(DBus::Object::Method::Arguments::Ptr args, bool
         config << options_.string_export();
     }
 
-    args->SetMethodReturn(glib2::Value::CreateTupleWrapped(config.str()));
+    args->SetMethodReturn(glib2::Value::Create(config.str()));
 }
 
 

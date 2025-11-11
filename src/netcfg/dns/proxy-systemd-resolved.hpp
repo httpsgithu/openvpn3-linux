@@ -376,7 +376,7 @@ class Link : public std::enable_shared_from_this<Link>
     std::atomic<uint16_t> asio_running_tasks = 0;
     Error::Storage::Ptr errors;
     DBus::Proxy::Client::Ptr proxy = nullptr;
-    int if_index = 0;
+    int32_t if_index = 0;
     DBus::Proxy::TargetPreset::Ptr tgt_link = nullptr;
     DBus::Proxy::TargetPreset::Ptr tgt_mgmt = nullptr;
     const std::string device_name;

@@ -88,7 +88,7 @@ DBus::Object::Path Manager::CreateVirtualInterface(const std::string &device_nam
     {
         GVariant *res = proxy->Call(tgt_mgr,
                                     "CreateVirtualInterface",
-                                    glib2::Value::CreateTupleWrapped(device_name));
+                                    glib2::Value::Create(device_name));
         glib2::Utils::checkParams(__func__, res, "(o)");
         const auto devpath = glib2::Value::Extract<DBus::Object::Path>(res, 0);
         g_variant_unref(res);
@@ -209,7 +209,7 @@ void Manager::NotificationSubscribe(NetCfgChangeType filter_flags)
     {
         GVariant *r = proxy->Call(tgt_mgr,
                                   "NotificationSubscribe",
-                                  glib2::Value::CreateTupleWrapped(filter_flags));
+                                  glib2::Value::Create(filter_flags));
         if (r)
         {
             g_variant_unref(r);
@@ -242,7 +242,7 @@ void Manager::NotificationUnsubscribe(const std::string &subscriber)
         // have exited before the netcfg service processes this call.
         GVariant *r = proxy->Call(tgt_mgr,
                                   "NotificationUnsubscribe",
-                                  glib2::Value::CreateTupleWrapped(subscriber));
+                                  glib2::Value::Create(subscriber));
         if (r)
         {
             g_variant_unref(r);

@@ -286,7 +286,7 @@ void ConfigHandler::method_import(DBus::Object::Method::Arguments::Ptr args)
 
         sig_configmgr_event_->Send(config_path, EventType::CFG_CREATED, owner);
 
-        args->SetMethodReturn(glib2::Value::CreateTupleWrapped(config_path));
+        args->SetMethodReturn(glib2::Value::Create(config_path));
     }
     catch (const DBus::Exception &e)
     {
@@ -316,7 +316,7 @@ void ConfigHandler::method_fetch_available_configs(DBus::Object::Method::Argumen
         paths.push_back(config->GetPath());
     }
 
-    args->SetMethodReturn(glib2::Value::CreateTupleWrapped(paths));
+    args->SetMethodReturn(glib2::Value::Create(paths));
 }
 
 
@@ -339,7 +339,7 @@ void ConfigHandler::method_lookup_config_name(DBus::Object::Method::Arguments::P
         paths.push_back(config->GetPath());
     }
 
-    args->SetMethodReturn(glib2::Value::CreateTupleWrapped(paths));
+    args->SetMethodReturn(glib2::Value::Create(paths));
 }
 
 
@@ -362,7 +362,7 @@ void ConfigHandler::method_search_by_tag(DBus::Object::Method::Arguments::Ptr ar
         paths.push_back(config->GetPath());
     }
 
-    args->SetMethodReturn(glib2::Value::CreateTupleWrapped(paths));
+    args->SetMethodReturn(glib2::Value::Create(paths));
 }
 
 
@@ -386,7 +386,7 @@ void ConfigHandler::method_search_by_owner(DBus::Object::Method::Arguments::Ptr 
         paths.push_back(config->GetPath());
     }
 
-    args->SetMethodReturn(glib2::Value::CreateTupleWrapped(paths));
+    args->SetMethodReturn(glib2::Value::Create(paths));
 }
 
 

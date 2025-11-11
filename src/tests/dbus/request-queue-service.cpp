@@ -297,7 +297,7 @@ class ReqQueueMain : public DBus::Object::Base
                     << std::endl;
             }
         }
-        return glib2::Value::CreateTupleWrapped(result);
+        return glib2::Value::Create(result);
     }
 };
 

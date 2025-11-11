@@ -139,7 +139,7 @@ void Handler::method_get_registered_modules(DBus::Object::Method::Arguments::Ptr
         }
     }
 
-    args->SetMethodReturn(glib2::Value::CreateTupleWrapped(paths));
+    args->SetMethodReturn(glib2::Value::Create(paths));
 }
 
 
@@ -161,7 +161,7 @@ void Handler::method_protocol_lookup(DBus::Object::Method::Arguments::Ptr args) 
     }
 
     retval = it->second["appcontrol_id"].asString();
-    args->SetMethodReturn(glib2::Value::CreateTupleWrapped(retval));
+    args->SetMethodReturn(glib2::Value::Create(retval));
 }
 
 
@@ -320,7 +320,7 @@ void Handler::method_run_checks(DBus::Object::Method::Arguments::Ptr args) const
     signals_->LogVerb2("RunChecks(\"" + protocol + "\", \"" + request + "\") -> \""
                        + ret_string + "\"");
 
-    args->SetMethodReturn(glib2::Value::CreateTupleWrapped(ret_string));
+    args->SetMethodReturn(glib2::Value::Create(ret_string));
 }
 
 

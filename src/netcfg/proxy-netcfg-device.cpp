@@ -184,7 +184,8 @@ void Device::AddNetworks(const std::vector<Network> &networks) const
     // with one builder would be to simple or not broken enough
     GVariant *res = proxy->Call(prxtgt,
                                 "AddNetworks",
-                                glib2::Builder::FinishWrapped(bld));
+                                glib2::Builder::Finish(bld));
+
     if (res)
     {
         g_variant_unref(res);
@@ -310,7 +311,7 @@ bool Device::AddDnsOptions(LogSender::Ptr log, const openvpn::DnsOptions &dns) c
 
 void Device::AddDNS(const std::vector<std::string> &server_list) const
 {
-    GVariant *list = glib2::Value::CreateTupleWrapped<std::string>(server_list);
+    GVariant *list = glib2::Value::Create(server_list);
     GVariant *res = proxy->Call(prxtgt, "AddDNS", list);
     if (res)
     {
@@ -322,7 +323,7 @@ void Device::AddDNS(const std::vector<std::string> &server_list) const
 
 void Device::AddDNSSearch(const std::vector<std::string> &domains) const
 {
-    GVariant *list = glib2::Value::CreateTupleWrapped<std::string>(domains);
+    GVariant *list = glib2::Value::Create(domains);
     GVariant *res = proxy->Call(prxtgt, "AddDNSSearch", list);
     if (res)
     {
@@ -354,7 +355,7 @@ void Device::SetDNSSEC(const openvpn::DnsServer::Security &mode) const
 
     GVariant *res = proxy->Call(prxtgt,
                                 "SetDNSSEC",
-                                glib2::Value::CreateTupleWrapped(mode_str));
+                                glib2::Value::Create(mode_str));
     if (res)
     {
         g_variant_unref(res);
@@ -410,7 +411,7 @@ void Device::SetDNSTransport(const openvpn::DnsServer::Transport &mode) const
     }
     GVariant *res = proxy->Call(prxtgt,
                                 "SetDNSTransport",
-                                glib2::Value::CreateTupleWrapped(mode_str));
+                                glib2::Value::Create(mode_str));
     if (res)
     {
         g_variant_unref(res);
@@ -446,7 +447,7 @@ DCO *Device::EnableDCO(const std::string &dev_name) const
 {
     GVariant *res = proxy->Call(prxtgt,
                                 "EnableDCO",
-                                glib2::Value::CreateTupleWrapped(dev_name));
+                                glib2::Value::Create(dev_name));
     auto dcopath = glib2::Value::Extract<DBus::Object::Path>(res, 0);
     if (res)
     {
@@ -696,7 +697,7 @@ void DCO::NewKey(unsigned int key_slot,
 
 void DCO::SwapKeys(unsigned int peer_id) const
 {
-    GVariant *res = proxy->Call(dcotgt, "SwapKeys", glib2::Value::CreateTupleWrapped<uint32_t>(peer_id));
+    GVariant *res = proxy->Call(dcotgt, "SwapKeys", glib2::Value::Create<uint32_t>(peer_id));
     if (res)
     {
         g_variant_unref(res);
@@ -722,7 +723,7 @@ void DCO::SetPeer(unsigned int peer_id,
 
 void DCO::GetPeer(unsigned int peer_id) const
 {
-    GVariant *res = proxy->Call(dcotgt, "GetPeer", glib2::Value::CreateTupleWrapped<uint32_t>(peer_id));
+    GVariant *res = proxy->Call(dcotgt, "GetPeer", glib2::Value::Create<uint32_t>(peer_id));
     if (res)
     {
         g_variant_unref(res);

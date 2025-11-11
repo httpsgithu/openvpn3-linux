@@ -149,7 +149,7 @@ IPAddress::IPAddress(GVariant *addr)
 
     family = glib2::Value::Extract<int>(addr, 0);
     GVariant *ip_array = g_variant_get_child_value(addr, 1);
-    ipaddr = glib2::Value::ExtractVector<std::byte>(ip_array, nullptr, false);
+    ipaddr = glib2::Value::ExtractVector<std::byte>(ip_array, nullptr);
 
     validate_data();
 }
@@ -202,8 +202,8 @@ std::string IPAddress::str() const
 GVariant *IPAddress::GetGVariant() const
 {
     GVariantBuilder *b = glib2::Builder::Create("(iay)");
-    glib2::Builder::Add(b, family, "i");
-    glib2::Builder::Add(b, glib2::Value::CreateVector(ipaddr));
+    glib2::Builder::Add<int32_t>(b, family);
+    glib2::Builder::Add(b, glib2::Value::Create(ipaddr));
     return glib2::Builder::Finish(b);
 }
 

@@ -55,9 +55,9 @@ NetCfgServiceHandler::NetCfgServiceHandler(DBus::Connection::Ptr conn_,
         {
             // If no resolver is configured, return an empty result
             // instead of an error when reading this property
-            return glib2::Value::CreateVector(std::vector<std::string>{});
+            return glib2::Value::Create(std::vector<std::string>{});
         }
-        return glib2::Value::CreateVector(resolver->GetDNSservers());
+        return glib2::Value::Create(resolver->GetDNSservers());
     };
     AddPropertyBySpec("global_dns_servers", "as", prop_glob_dns_srvs);
 
@@ -67,9 +67,9 @@ NetCfgServiceHandler::NetCfgServiceHandler(DBus::Connection::Ptr conn_,
         {
             // If no resolver is configured, return an empty result
             // instead of an error when reading this property
-            return glib2::Value::CreateVector(std::vector<std::string>{});
+            return glib2::Value::Create(std::vector<std::string>{});
         }
-        return glib2::Value::CreateVector(resolver->GetSearchDomains());
+        return glib2::Value::Create(resolver->GetSearchDomains());
     };
     AddPropertyBySpec("global_dns_search", "as", prop_glob_dns_srch);
 
@@ -143,9 +143,9 @@ NetCfgServiceHandler::NetCfgServiceHandler(DBus::Connection::Ptr conn_,
         [](DBus::Object::Method::Arguments::Ptr args)
         {
 #ifdef ENABLE_OVPNDCO
-            args->SetMethodReturn(glib2::Value::CreateTupleWrapped(NetCfgDCO::available()));
+            args->SetMethodReturn(glib2::Value::Create(NetCfgDCO::available()));
 #else
-            args->SetMethodReturn(glib2::Value::CreateTupleWrapped(false));
+            args->SetMethodReturn(glib2::Value::Create(false));
 #endif
         });
     args_dco_avail->AddOutput("available", glib2::DataType::DBus<bool>());
@@ -288,7 +288,7 @@ void NetCfgServiceHandler::method_create_virtual_interface(DBus::Object::Method:
             dev_path,
             sender_uid,
             sender_pid));
-        args->SetMethodReturn(glib2::Value::CreateTupleWrapped(dev_path, "o"));
+        args->SetMethodReturn(glib2::Value::Create<DBus::Object::Path>(dev_path));
     }
     catch (const DBus::Exception &excp)
     {
@@ -300,6 +300,7 @@ void NetCfgServiceHandler::method_create_virtual_interface(DBus::Object::Method:
                                          excp.GetRawError()));
         throw NetCfgException(user_error);
     }
+
 }
 
 
@@ -322,7 +323,7 @@ void NetCfgServiceHandler::method_fetch_interface_list(DBus::Object::Method::Arg
             dev_paths.push_back(path);
         }
     }
-    args->SetMethodReturn(glib2::Value::CreateTupleWrapped(dev_paths));
+    args->SetMethodReturn(glib2::Value::Create(dev_paths));
 }
 
 
@@ -389,7 +390,7 @@ void NetCfgServiceHandler::method_protect_socket(DBus::Object::Method::Arguments
     {
         close(fd);
     }
-    args->SetMethodReturn(glib2::Value::CreateTupleWrapped(true));
+    args->SetMethodReturn(glib2::Value::Create(true));
 }
 
 

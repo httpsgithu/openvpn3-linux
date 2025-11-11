@@ -88,7 +88,7 @@ NetCfgDevice::NetCfgDevice(DBus::Connection::Ptr dbuscon_,
         "au",
         [this](const DBus::Object::Property::BySpec &prop) -> GVariant *
         {
-            return glib2::Value::CreateVector(object_acl->GetAccessList());
+            return glib2::Value::Create(object_acl->GetAccessList());
         });
 
     AddPropertyBySpec(
@@ -123,8 +123,8 @@ NetCfgDevice::NetCfgDevice(DBus::Connection::Ptr dbuscon_,
         [&](const DBus::Object::Property::BySpec &prop) -> GVariant *
         {
             return (dnsconfig
-                        ? glib2::Value::CreateVector(dnsconfig->GetNameServers())
-                        : glib2::Value::CreateVector(std::vector<std::string>{}));
+                        ? glib2::Value::Create(dnsconfig->GetNameServers())
+                        : glib2::Value::Create(std::vector<std::string>{}));
         });
 
     AddPropertyBySpec(
@@ -133,8 +133,8 @@ NetCfgDevice::NetCfgDevice(DBus::Connection::Ptr dbuscon_,
         [&](const DBus::Object::Property::BySpec &prop) -> GVariant *
         {
             return (dnsconfig
-                        ? glib2::Value::CreateVector(dnsconfig->GetSearchDomains())
-                        : glib2::Value::CreateVector(std::vector<std::string>{}));
+                        ? glib2::Value::Create(dnsconfig->GetSearchDomains())
+                        : glib2::Value::Create(std::vector<std::string>{}));
         });
 
     AddPropertyBySpec(
@@ -494,7 +494,7 @@ void NetCfgDevice::method_enable_dco(DBus::Object::Method::Arguments::Ptr args)
         throw DBus::Object::Method::Exception(excp.what());
     }
 
-    args->SetMethodReturn(glib2::Value::CreateTupleWrapped(dco_device->GetPath()));
+    args->SetMethodReturn(glib2::Value::Create(dco_device->GetPath()));
 }
 #endif
 

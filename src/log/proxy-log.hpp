@@ -256,7 +256,7 @@ class LogServiceProxy
         // leaking memory.
         GVariant *empty = logservice->Call(logtarget,
                                            "Attach",
-                                           glib2::Value::CreateTupleWrapped(interf));
+                                           glib2::Value::Create(interf));
         g_variant_unref(empty);
     }
 
@@ -305,7 +305,7 @@ class LogServiceProxy
     {
         GVariant *r = logservice->Call(logtarget,
                                        "Detach",
-                                       glib2::Value::CreateTupleWrapped(interf));
+                                       glib2::Value::Create(interf));
         g_variant_unref(r);
     }
 

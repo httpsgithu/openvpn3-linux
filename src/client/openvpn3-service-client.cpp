@@ -135,7 +135,7 @@ class BackendClientObject : public DBus::Object::Base
         auto ping = AddMethod("Ping",
                               [](DBus::Object::Method::Arguments::Ptr args)
                               {
-                                  args->SetMethodReturn(glib2::Value::CreateTupleWrapped(true));
+                                  args->SetMethodReturn(glib2::Value::Create(true));
                               });
         ping->AddOutput("alive", "b");
 
@@ -635,7 +635,7 @@ class BackendClientObject : public DBus::Object::Base
             // Since the configuration may be set up for single-use
             // only, we must keep this config as long as we're running
             std::string config_name = fetch_configuration();
-            GVariant *ret = glib2::Value::CreateTupleWrapped(config_name);
+            GVariant *ret = glib2::Value::Create(config_name);
 
             try
             {

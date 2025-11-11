@@ -296,13 +296,13 @@ static std::pair<LogGroup, LogCategory> parse_group_category(const std::string &
  */
 Log parse_dict(GVariant *logevent)
 {
-    auto group = glib2::Value::Dict::Lookup<LogGroup>(logevent, "log_group");
-    auto category = glib2::Value::Dict::Lookup<LogCategory>(logevent, "log_category");
-    auto message = glib2::Value::Dict::Lookup<std::string>(logevent,
-                                                           "log_message");
+    auto group = glib2::Dict::Lookup<LogGroup>(logevent, "log_group");
+    auto category = glib2::Dict::Lookup<LogCategory>(logevent, "log_category");
+    auto message = glib2::Dict::Lookup<std::string>(logevent,
+                                                    "log_message");
     try
     {
-        auto session_token = glib2::Value::Dict::Lookup<std::string>(logevent,
+        auto session_token = glib2::Dict::Lookup<std::string>(logevent,
                                                                      "log_session_token");
         return Log(group, category, session_token, message);
     }

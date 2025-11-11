@@ -127,7 +127,7 @@ static GVariant *create_gvariant_addr(int32_t family, std::vector<std::byte> &ad
 {
     GVariantBuilder *b = glib2::Builder::Create("(iay)");
     glib2::Builder::Add(b, static_cast<int32_t>(family));
-    glib2::Builder::Add(b, glib2::Value::CreateVector(addr));
+    glib2::Builder::Add(b, glib2::Value::Create(addr));
     return glib2::Builder::Finish(b);
 }
 

@@ -170,7 +170,7 @@ class BackendStarterHandler : public DBus::Object::Base
                                   GVariant *parms = args->GetMethodParameters();
                                   std::string token = glib2::Value::Extract<std::string>(parms, 0);
                                   auto be_pid = static_cast<uint32_t>(this->start_backend_process(token.c_str()));
-                                  args->SetMethodReturn(glib2::Value::CreateTupleWrapped(be_pid));
+                                  args->SetMethodReturn(glib2::Value::Create(be_pid));
                               });
         args->AddInput("token", glib2::DataType::DBus<std::string>());
         args->AddOutput("pid", glib2::DataType::DBus<uint32_t>());

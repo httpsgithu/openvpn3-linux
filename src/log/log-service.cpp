@@ -525,7 +525,7 @@ void ServiceHandler::method_get_subscr_list(DBus::Object::Method::Arguments::Ptr
         glib2::Builder::Add(elmnt_bld, std::string(sub->src_target->object_path));
         glib2::Builder::Add(bld, glib2::Builder::Finish(elmnt_bld));
     }
-    args->SetMethodReturn(glib2::Builder::FinishWrapped(bld));
+    args->SetMethodReturn(glib2::Builder::Finish(bld));
 }
 
 
@@ -541,7 +541,7 @@ void ServiceHandler::method_proxy_log_events(DBus::Object::Method::Arguments::Pt
         auto tag = session_logtag_index.at(lookup_key);
         auto proxypath = log_attach_subscr.at(tag)->AddProxyTarget(target,
                                                                    session_path);
-        args->SetMethodReturn(glib2::Value::CreateTupleWrapped(proxypath));
+        args->SetMethodReturn(glib2::Value::Create(proxypath));
     }
     catch (const std::out_of_range &)
     {

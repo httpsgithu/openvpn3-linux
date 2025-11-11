@@ -288,7 +288,7 @@ Session::Session(DBus::Connection::Ptr dbuscon,
             {
                 res.push_back(fwd->GetPath());
             }
-            return glib2::Value::CreateVector(res);
+            return glib2::Value::Create(res);
         });
 
     // owner: The UID of the user starting this session
@@ -307,7 +307,7 @@ Session::Session(DBus::Connection::Ptr dbuscon,
         "au",
         [this](const DBus::Object::Property::BySpec &prop) -> GVariant *
         {
-            return glib2::Value::CreateVector(object_acl->GetAccessList());
+            return glib2::Value::Create(object_acl->GetAccessList());
         });
 
     // status: Current VPN session status

@@ -110,7 +110,7 @@ GVariant *NetCfgSubscriptions::List()
     {
         g_variant_builder_add(bld, "(su)", sub.first.c_str(), sub.second);
     }
-    return glib2::Builder::FinishWrapped(bld);
+    return glib2::Builder::Finish(bld);
 }
 
 

@@ -106,7 +106,7 @@ class Handler
         {
             GVariant *r = proxy->Call(target,
                                       "ProtocolLookup",
-                                      glib2::Value::CreateTupleWrapped(enterprise_id));
+                                      glib2::Value::Create(enterprise_id));
 
             return glib2::Value::Extract<std::string>(r, 0);
         }

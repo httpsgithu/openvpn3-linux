@@ -250,7 +250,7 @@ std::vector<std::string> Link::GetDNSServers() const
 std::vector<std::string> Link::SetDNSServers(const IPAddress::List &servers)
 {
     GVariantBuilder *b = glib2::Builder::Create("(ia(iay))");
-    glib2::Builder::Add<int32_t>(b, if_index);
+    glib2::Builder::Add(b, if_index);
 
     glib2::Builder::OpenChild(b, "a(iay)");
     std::vector<std::string> applied{};
@@ -314,7 +314,7 @@ SearchDomain::List Link::GetDomains() const
 std::vector<std::string> Link::SetDomains(const SearchDomain::List &doms)
 {
     GVariantBuilder *b = glib2::Builder::Create("(ia(sb))");
-    glib2::Builder::Add<int32_t>(b, if_index);
+    glib2::Builder::Add(b, if_index);
 
     glib2::Builder::OpenChild(b, "a(sb)");
     std::vector<std::string> applied{};
@@ -399,7 +399,7 @@ void Link::SetDNSSEC(const std::string &mode)
     }
 
     GVariantBuilder *b = glib2::Builder::Create("(is)");
-    glib2::Builder::Add<int32_t>(b, if_index);
+    glib2::Builder::Add(b, if_index);
     glib2::Builder::Add(b, mode);
     BackgroundCall(tgt_mgmt, "SetLinkDNSSEC", glib2::Builder::Finish(b));
 }
@@ -429,7 +429,7 @@ void Link::SetDNSOverTLS(const std::string &mode)
     }
 
     GVariantBuilder *b = glib2::Builder::Create("(is)");
-    glib2::Builder::Add<int32_t>(b, if_index);
+    glib2::Builder::Add(b, if_index);
     glib2::Builder::Add(b, mode);
     BackgroundCall(tgt_mgmt, "SetLinkDNSOverTLS", glib2::Builder::Finish(b));
 }
@@ -437,7 +437,7 @@ void Link::SetDNSOverTLS(const std::string &mode)
 
 void Link::Revert()
 {
-    BackgroundCall(tgt_mgmt, "RevertLink", glib2::Value::Create<int32_t>(if_index));
+    BackgroundCall(tgt_mgmt, "RevertLink", glib2::Value::Create(if_index));
 }
 
 
@@ -769,7 +769,7 @@ DBus::Object::Path Manager::GetLink(int32_t if_idx) const
 {
     GVariant *res = proxy->Call(tgt_resolved,
                                 "GetLink",
-                                glib2::Value::CreateTupleWrapped(if_idx, "i"));
+                                glib2::Value::Create(if_idx));
     glib2::Utils::checkParams("GetLink", res, "(o)", 1);
     try
     {

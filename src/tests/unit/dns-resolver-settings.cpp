@@ -272,7 +272,7 @@ TEST(DNSResolverSettings, GVariantTests_SingleNameServer)
 
     // Insert a single name server and search domain
     std::vector<std::string> ns = {{"9.9.9.9"}};
-    GVariant *d = glib2::Value::CreateTupleWrapped(ns);
+    GVariant *d = glib2::Value::TupleWrap(glib2::Value::Create(ns));
     std::string res = r1->AddNameServers(d);
     ASSERT_STREQ(res.c_str(), "9.9.9.9");
 
@@ -294,7 +294,7 @@ TEST(DNSResolverSettings, GVariantTests_SingleSearchDomain)
 
     // Insert a single name server and search domain
     std::vector<std::string> sd = {{"sub0.example.net"}};
-    GVariant *d = glib2::Value::CreateTupleWrapped(sd);
+    GVariant *d = glib2::Value::TupleWrap(glib2::Value::Create(sd));
     r1->AddSearchDomains(d);
 
     std::vector<std::string> chk = r1->GetSearchDomains();
@@ -315,12 +315,12 @@ TEST(DNSResolverSettings, GVariantTests_MultipleEntries)
 
     // Insert a single name server and search domain
     std::vector<std::string> ns = {{"10.0.0.1", "10.0.2.2", "10.0.3.3"}};
-    GVariant *d = glib2::Value::CreateTupleWrapped(ns);
+    GVariant *d = glib2::Value::TupleWrap(glib2::Value::Create(ns));
     std::string res = r1->AddNameServers(d);
     ASSERT_STREQ(res.c_str(), "10.0.0.1, 10.0.2.2, 10.0.3.3");
 
     std::vector<std::string> sd = {{"sub1.example.net", "sub2.example.com", "sub3.example.org", "sub4.test.example"}};
-    d = glib2::Value::CreateTupleWrapped(sd);
+    d = glib2::Value::TupleWrap(glib2::Value::Create(sd));
     r1->AddSearchDomains(d);
 
     std::vector<std::string> chk_ns = r1->GetNameServers();
@@ -345,13 +345,13 @@ TEST(DNSResolverSettings, GVariantTests_DuplicatedEntries)
 
     // Insert a single name server and search domain
     std::vector<std::string> ns = {{"10.0.0.1", "10.0.0.2", "10.0.0.2"}};
-    GVariant *d = glib2::Value::CreateTupleWrapped(ns);
+    GVariant *d = glib2::Value::TupleWrap(glib2::Value::Create(ns));
     r1->AddNameServers(d);
     ASSERT_EQ(r1->GetNameServers().size(), 2);
 
     std::vector<std::string> sd = {
         {"sub1.example.net", "sub2.example.com", "sub1.example.net", "sub2.example.com"}};
-    d = glib2::Value::CreateTupleWrapped(sd);
+    d = glib2::Value::TupleWrap(glib2::Value::Create(sd));
     r1->AddSearchDomains(d);
     ASSERT_EQ(r1->GetSearchDomains().size(), 2);
 }
@@ -392,28 +392,28 @@ TEST(DNSResolverSettings, DNSSEC_tests_gvariant)
     rs->AddNameServer("9.9.9.9");
 
     std::string dnssec_mode = "yes";
-    GVariant *d = glib2::Value::CreateTupleWrapped(dnssec_mode);
+    GVariant *d = glib2::Value::TupleWrap(glib2::Value::Create(dnssec_mode));
     rs->SetDNSSEC(d);
     g_variant_unref(d);
     EXPECT_EQ(openvpn::DnsServer::Security::Yes, rs->GetDNSSEC());
     EXPECT_STREQ("yes", rs->GetDNSSEC_string().c_str());
 
     dnssec_mode = "no";
-    d = glib2::Value::CreateTupleWrapped(dnssec_mode);
+    d = glib2::Value::TupleWrap(glib2::Value::Create(dnssec_mode));
     rs->SetDNSSEC(d);
     g_variant_unref(d);
     EXPECT_EQ(openvpn::DnsServer::Security::No, rs->GetDNSSEC());
     EXPECT_STREQ("no", rs->GetDNSSEC_string().c_str());
 
     dnssec_mode = "optional";
-    d = glib2::Value::CreateTupleWrapped(dnssec_mode);
+    d = glib2::Value::TupleWrap(glib2::Value::Create(dnssec_mode));
     rs->SetDNSSEC(d);
     g_variant_unref(d);
     EXPECT_EQ(openvpn::DnsServer::Security::Optional, rs->GetDNSSEC());
     EXPECT_STREQ("optional", rs->GetDNSSEC_string().c_str());
 
     dnssec_mode = "unset"; // Not supported value
-    d = glib2::Value::CreateTupleWrapped(dnssec_mode);
+    d = glib2::Value::TupleWrap(glib2::Value::Create(dnssec_mode));
     EXPECT_THROW(rs->SetDNSSEC(d), NetCfgException);
     g_variant_unref(d);
 
@@ -462,28 +462,28 @@ TEST(DNSResolverSettings, DNSTransport_tests_gvariant)
     rs->AddNameServer("9.9.9.9");
 
     std::string transport = "plain";
-    GVariant *d = glib2::Value::CreateTupleWrapped(transport);
+    GVariant *d = glib2::Value::TupleWrap(glib2::Value::Create(transport));
     rs->SetDNSTransport(d);
     g_variant_unref(d);
     EXPECT_EQ(openvpn::DnsServer::Transport::Plain, rs->GetDNSTransport());
     EXPECT_STREQ("plain", rs->GetDNSTransport_string().c_str());
 
     transport = "dot";
-    d = glib2::Value::CreateTupleWrapped(transport);
+    d = glib2::Value::TupleWrap(glib2::Value::Create(transport));
     rs->SetDNSTransport(d);
     g_variant_unref(d);
     EXPECT_EQ(openvpn::DnsServer::Transport::TLS, rs->GetDNSTransport());
     EXPECT_STREQ("dot", rs->GetDNSTransport_string().c_str());
 
     transport = "doh";
-    d = glib2::Value::CreateTupleWrapped(transport);
+    d = glib2::Value::TupleWrap(glib2::Value::Create(transport));
     rs->SetDNSTransport(d);
     g_variant_unref(d);
     EXPECT_EQ(openvpn::DnsServer::Transport::HTTPS, rs->GetDNSTransport());
     EXPECT_STREQ("doh", rs->GetDNSTransport_string().c_str());
 
     transport = "unset"; // Not supported value
-    d = glib2::Value::CreateTupleWrapped(transport);
+    d = glib2::Value::TupleWrap(glib2::Value::Create(transport));
     EXPECT_THROW(rs->SetDNSTransport(d), NetCfgException);
     g_variant_unref(d);
 

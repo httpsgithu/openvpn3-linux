@@ -200,7 +200,7 @@ class Session : public DBusRequiresQueueProxy
         {
             GVariant *res = proxy->Call(target,
                                         "Pause",
-                                        glib2::Value::CreateTupleWrapped(reason));
+                                        glib2::Value::Create(reason));
             g_variant_unref(res);
         }
         catch (const DBus::Proxy::Exception &)
@@ -419,7 +419,7 @@ class Session : public DBusRequiresQueueProxy
         {
             GVariant *res = proxy->Call(target,
                                         "AccessGrant",
-                                        glib2::Value::CreateTupleWrapped(uid));
+                                        glib2::Value::Create(uid));
             g_variant_unref(res);
         }
         catch (const DBus::Proxy::Exception &)
@@ -440,7 +440,7 @@ class Session : public DBusRequiresQueueProxy
         {
             GVariant *res = proxy->Call(target,
                                         "AccessRevoke",
-                                        glib2::Value::CreateTupleWrapped(uid));
+                                        glib2::Value::Create(uid));
             g_variant_unref(res);
         }
         catch (const DBus::Proxy::Exception &)
@@ -461,7 +461,7 @@ class Session : public DBusRequiresQueueProxy
         {
             GVariant *res = proxy->Call(target,
                                         "LogForward",
-                                        glib2::Value::CreateTupleWrapped(enable));
+                                        glib2::Value::Create(enable));
             g_variant_unref(res);
         }
         catch (const DBus::Proxy::Exception &)
@@ -715,7 +715,7 @@ class Manager
                 std::unique_lock<std::mutex> lock{new_tunnel_mtx};
                 GVariant *r = proxy->Call(target,
                                           "NewTunnel",
-                                          glib2::Value::CreateTupleWrapped(cfgpath));
+                                          glib2::Value::Create(cfgpath));
                 session_path = glib2::Value::Extract<DBus::Object::Path>(r, 0);
             }
 
@@ -814,7 +814,7 @@ class Manager
         {
             GVariant *r = proxy->Call(target,
                                       "LookupConfigName",
-                                      glib2::Value::CreateTupleWrapped(cfgname));
+                                      glib2::Value::Create(cfgname));
             auto sessions_list = glib2::Value::ExtractVector<DBus::Object::Path>(r, 0);
             return sessions_list;
         }
@@ -839,7 +839,7 @@ class Manager
         {
             GVariant *r = proxy->Call(target,
                                       "LookupInterface",
-                                      glib2::Value::CreateTupleWrapped(interface));
+                                      glib2::Value::Create(interface));
             auto session_path = glib2::Value::Extract<DBus::Object::Path>(r, 0);
             if (session_path.empty())
             {

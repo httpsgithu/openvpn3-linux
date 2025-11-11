@@ -158,7 +158,7 @@ void SrvHandler::method_new_tunnel(Object::Method::Arguments::Ptr args)
     }
 
     auto sespath = tunnel_queue->AddTunnel(cfgpath, owner);
-    args->SetMethodReturn(glib2::Value::CreateTupleWrapped(sespath));
+    args->SetMethodReturn(glib2::Value::Create(sespath));
 }
 
 
@@ -177,7 +177,7 @@ void SrvHandler::method_fetch_avail_sessions(Object::Method::Arguments::Ptr args
     {
         session_paths.push_back(obj->GetPath());
     }
-    args->SetMethodReturn(glib2::Value::CreateTupleWrapped(session_paths));
+    args->SetMethodReturn(glib2::Value::Create(session_paths));
 }
 
 
@@ -195,7 +195,7 @@ void SrvHandler::method_fetch_managed_interf(Object::Method::Arguments::Ptr args
     {
         devices.push_back(obj->GetDeviceName());
     }
-    args->SetMethodReturn(glib2::Value::CreateTupleWrapped(devices));
+    args->SetMethodReturn(glib2::Value::Create(devices));
 }
 
 
@@ -218,7 +218,7 @@ void SrvHandler::method_lookup_config(Object::Method::Arguments::Ptr args)
     {
         session_paths.push_back(obj->GetPath());
     }
-    args->SetMethodReturn(glib2::Value::CreateTupleWrapped(session_paths));
+    args->SetMethodReturn(glib2::Value::Create(session_paths));
 }
 
 
@@ -245,7 +245,7 @@ void SrvHandler::method_lookup_interf(Object::Method::Arguments::Ptr args)
         throw DBus::Object::Method::Exception("More than one interface found");
     }
 
-    args->SetMethodReturn(glib2::Value::CreateTupleWrapped(match[0]->GetPath()));
+    args->SetMethodReturn(glib2::Value::Create(match[0]->GetPath()));
 }
 
 

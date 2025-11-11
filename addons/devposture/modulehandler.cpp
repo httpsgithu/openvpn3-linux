@@ -35,7 +35,7 @@ ModuleHandler::ModuleHandler(Module::UPtr mod, const bool external)
                 g_variant_builder_add(b, "{sv}", key.c_str(), glib2::Value::Create(value));
             }
 
-            args->SetMethodReturn(glib2::Builder::FinishWrapped(b));
+            args->SetMethodReturn(glib2::Builder::Finish(b));
         });
 
     r_args->AddInput("input", "a{sv}");
