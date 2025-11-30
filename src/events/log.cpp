@@ -146,15 +146,17 @@ GVariant *Log::GetGVariantTuple() const
 
 GVariant *Log::GetGVariantDict() const
 {
-    GVariantBuilder *b = glib2::Builder::Create("a{sv}");
-    g_variant_builder_add(b, "{sv}", "log_group", glib2::Value::Create(group));
-    g_variant_builder_add(b, "{sv}", "log_category", glib2::Value::Create(category));
+    GVariantDict *dict = glib2::Dict::Create();
+
+    glib2::Dict::Add(dict, "log_group", glib2::Value::Create(group));
+    glib2::Dict::Add(dict, "log_category", glib2::Value::Create(category));
     if (!session_token.empty() || Format::SESSION_TOKEN == format)
     {
-        g_variant_builder_add(b, "{sv}", "log_session_token", glib2::Value::Create(session_token));
+        glib2::Dict::Add(dict, "log_session_token", glib2::Value::Create(session_token));
     }
-    g_variant_builder_add(b, "{sv}", "log_message", glib2::Value::Create(message));
-    return glib2::Builder::Finish(b);
+    glib2::Dict::Add(dict, "log_message", glib2::Value::Create(message));
+
+    return glib2::Dict::Finish(dict);
 }
 
 

@@ -125,11 +125,11 @@ GVariant *Status::GetGVariantTuple() const
 
 GVariant *Status::GetGVariantDict() const
 {
-    GVariantBuilder *b = glib2::Builder::Create("a{sv}");
-    g_variant_builder_add(b, "{sv}", "major", glib2::Value::Create(major));
-    g_variant_builder_add(b, "{sv}", "minor", glib2::Value::Create(minor));
-    g_variant_builder_add(b, "{sv}", "status_message", glib2::Value::Create(message));
-    return glib2::Builder::Finish(b);
+    GVariantDict *dict = glib2::Dict::Create();
+    glib2::Dict::Add(dict, "major", glib2::Value::Create(major));
+    glib2::Dict::Add(dict, "minor", glib2::Value::Create(minor));
+    glib2::Dict::Add(dict, "status_message", glib2::Value::Create(message));
+    return glib2::Dict::Finish(dict);
 }
 
 

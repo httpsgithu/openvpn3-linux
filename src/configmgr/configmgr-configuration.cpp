@@ -531,7 +531,7 @@ void Configuration::add_properties()
                       "a{sv}",
                       [this](const DBus::Object::Property::BySpec &prop)
                       {
-                          GVariantBuilder *b = glib2::Builder::Create("a{sv}");
+                          GVariantDict *dict = glib2::Dict::Create();
 
                           for (const auto &o : override_list_)
                           {
@@ -539,10 +539,10 @@ void Configuration::add_properties()
                                                 ? glib2::Value::Create(std::get<std::string>(o.value))
                                                 : glib2::Value::Create(std::get<bool>(o.value)));
 
-                              g_variant_builder_add(b, "{sv}", o.key.c_str(), value);
+                              glib2::Dict::Add(dict, o.key, value);
                           }
 
-                          return glib2::Builder::Finish(b);
+                          return glib2::Dict::Finish(dict);
                       });
 
     // Read-write properties need to also update the persistent disk file.

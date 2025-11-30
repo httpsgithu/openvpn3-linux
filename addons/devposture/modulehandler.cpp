@@ -28,14 +28,14 @@ ModuleHandler::ModuleHandler(Module::UPtr mod, const bool external)
         "Run",
         [this](DBus::Object::Method::Arguments::Ptr args)
         {
-            GVariantBuilder *b = glib2::Builder::Create("a{sv}");
+            GVariantDict *dict = glib2::Dict::Create();
 
             for (const auto &[key, value] : module_->Run({}))
             {
-                g_variant_builder_add(b, "{sv}", key.c_str(), glib2::Value::Create(value));
+                glib2::Dict::Add(dict, key, value);
             }
 
-            args->SetMethodReturn(glib2::Builder::Finish(b));
+            args->SetMethodReturn(glib2::Dict::Finish(dict));
         });
 
     r_args->AddInput("input", "a{sv}");

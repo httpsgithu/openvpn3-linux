@@ -545,22 +545,14 @@ class OpenVPN3ConfigurationProxy
         }
 
         GVariant *res = proxy->GetPropertyGVariant(proxy_tgt, "overrides");
-        if (NULL == res)
+        if (nullptr == res)
         {
             throw DBus::Proxy::Exception("GetProperty(\"overrides\") call failed");
         }
-        GVariantIter *override_iter = NULL;
-        g_variant_get(res, "a{sv}", &override_iter);
 
         std::vector<Override> ret;
-
-        GVariant *override;
-        while ((override = g_variant_iter_next_value(override_iter)))
+        auto override_extractor = [&ret](const std::string &key, GVariant *value)
         {
-            gchar *key = nullptr;
-            GVariant *val = nullptr;
-            g_variant_get(override, "{sv}", &key, &val);
-
             auto o = GetConfigOverride(key);
             if (!o)
             {
@@ -568,18 +560,20 @@ class OpenVPN3ConfigurationProxy
             }
             if (std::holds_alternative<std::string>(o->value))
             {
-                o->value = glib2::Value::Get<std::string>(val);
+                o->value = glib2::Value::Get<std::string>(value);
                 ret.push_back(*o);
             }
             else
             {
-                o->value = glib2::Value::Get<bool>(val);
+                o->value = glib2::Value::Get<bool>(value);
                 ret.push_back(*o);
             }
-        }
+
+        };
+        glib2::Dict::IterateDictionary(res, override_extractor);
+
         cached_overrides = ret;
         g_variant_unref(res);
-        g_variant_iter_free(override_iter);
         return ret;
     }
 

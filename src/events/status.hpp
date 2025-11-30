@@ -107,8 +107,7 @@ struct Status
      *  Create a D-Bus compliant GVariant object with the status information
      *  packed as a '(uus)' tuple
      *
-     * @return Returns a pointer to a new GVariant (@g_variant_new())
-     *         allocated object.
+     * @return Returns a pointer to a new GVariant object.
      */
     GVariant *GetGVariantTuple() const;
 
@@ -116,8 +115,7 @@ struct Status
      *  Create a D-Bus compliant GVariant object with the status information
      *  packed as a key/value based dictionary.
      *
-     * @return Returns a pointer to a new GVariant (@g_variant_new())
-     *         allocated object.
+     * @return Returns a pointer to a new GVariant object.
      */
     GVariant *GetGVariantDict() const;
 
