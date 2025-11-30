@@ -77,12 +77,12 @@ bool NetCfgChangeEvent::empty() const noexcept
 
 GVariant *NetCfgChangeEvent::GetGVariant() const
 {
-    GVariantBuilder *b = g_variant_builder_new(G_VARIANT_TYPE("(usa{ss})"));
-    g_variant_builder_add(b, "u", (guint32)type);
-    g_variant_builder_add(b, "s", device.c_str());
+    GVariantBuilder *b = glib2::Builder::Create("(usa{ss})");
+    glib2::Builder::Add(b, type);
+    glib2::Builder::Add(b, device);
 
-    g_variant_builder_open(b, G_VARIANT_TYPE("a{ss}"));
-    for (const auto &e : details)
+    glib2::Builder::OpenChild(b, "a{ss}");
+    for (const auto &[key, value] : details)
     {
         // WARNING: For some odd reason, these four lines
         // below this code context triggers a memory leak
@@ -91,17 +91,10 @@ GVariant *NetCfgChangeEvent::GetGVariant() const
         // to a separate and minimal program does not trigger
         // this leak warning despite being practically the same
         // code.
-        g_variant_builder_open(b, G_VARIANT_TYPE("{ss}"));
-        g_variant_builder_add(b, "s", e.first.c_str());
-        g_variant_builder_add(b, "s", e.second.c_str());
-        g_variant_builder_close(b);
+        glib2::Builder::AddKeyValue<std::string, std::string>(b, key, value);
     }
-    g_variant_builder_close(b);
-
-    GVariant *ret = g_variant_builder_end(b);
-    g_variant_builder_clear(b);
-    g_variant_builder_unref(b);
-    return ret;
+    glib2::Builder::CloseChild(b);
+    return glib2::Builder::Finish(b);
 }
 
 

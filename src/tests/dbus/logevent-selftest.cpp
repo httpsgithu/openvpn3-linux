@@ -141,9 +141,9 @@ int test2_without_session_token()
     {
         std::cout << "-- Testing parsing GVariantDict - correct dict ... ";
         GVariantBuilder *b = glib2::Builder::Create("a{sv}");
-        g_variant_builder_add(b, "{sv}", "log_group", glib2::Value::Create(LogGroup::LOGGER));
-        g_variant_builder_add(b, "{sv}", "log_category", glib2::Value::Create(LogCategory::DEBUG));
-        g_variant_builder_add(b, "{sv}", "log_message", glib2::Value::Create<std::string>("Test log message"));
+        glib2::Builder::AddKeyValue<std::string, GVariant *>(b, "log_group", glib2::Value::Create(LogGroup::LOGGER));
+        glib2::Builder::AddKeyValue<std::string, GVariant *>(b, "log_category", glib2::Value::Create(LogCategory::DEBUG));
+        glib2::Builder::AddKeyValue<std::string, GVariant *>(b, "log_message", glib2::Value::Create<std::string>("Test log message"));
         GVariant *data = glib2::Builder::Finish(b);
         auto parsed = Events::ParseLog(data);
 
@@ -272,12 +272,13 @@ int test2_with_session_token()
     {
         std::cout << "-- Testing parsing GVariantDict - with session token ... ";
         GVariantBuilder *b = glib2::Builder::Create("a{sv}");
-        g_variant_builder_add(b, "{sv}", "log_group", glib2::Value::Create(LogGroup::LOGGER));
-        g_variant_builder_add(b, "{sv}", "log_category", glib2::Value::Create(LogCategory::DEBUG));
-        g_variant_builder_add(b, "{sv}", "log_session_token", glib2::Value::Create<std::string>("session_token_value"));
-        g_variant_builder_add(b, "{sv}", "log_message", glib2::Value::Create<std::string>("Test log message"));
+        glib2::Builder::AddKeyValue<std::string, GVariant *>(b, "log_group", glib2::Value::Create(LogGroup::LOGGER));
+        glib2::Builder::AddKeyValue<std::string, GVariant *>(b, "log_category", glib2::Value::Create(LogCategory::DEBUG));
+        glib2::Builder::AddKeyValue<std::string, GVariant *>(b, "log_session_token", glib2::Value::Create<std::string>("session_token_value"));
+        glib2::Builder::AddKeyValue<std::string, GVariant *>(b, "log_message", glib2::Value::Create<std::string>("Test log message"));
         GVariant *data = glib2::Builder::Finish(b);
         auto parsed = Events::ParseLog(data);
+        g_variant_unref(data);
 
         if (LogGroup::LOGGER != parsed.group
             || LogCategory::DEBUG != parsed.category
@@ -292,7 +293,6 @@ int test2_with_session_token()
         {
             std::cout << "PASSED" << std::endl;
         }
-        g_variant_unref(data);
     }
     catch (LogException &excp)
     {

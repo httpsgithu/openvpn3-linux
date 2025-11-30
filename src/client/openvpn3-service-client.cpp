@@ -354,16 +354,13 @@ class BackendClientObject : public DBus::Object::Base
 
         auto prop_statistics = [this](const DBus::Object::Property::BySpec &prop)
         {
-            GVariantBuilder *res = glib2::Builder::Create("a{sx}");
+            GVariantBuilder *res = glib2::Builder::Create(prop.GetDBusType());
             if (this->vpnclient)
             {
                 auto vpncl = this->vpnclient.get();
                 for (const auto &stat : vpncl->GetStats())
                 {
-                    g_variant_builder_add(res,
-                                          "{sx}",
-                                          stat.key.c_str(),
-                                          stat.value);
+                    glib2::Builder::AddKeyValue<std::string, int64_t>(res, stat.key, stat.value);
                 }
             }
             return glib2::Builder::Finish(res);
