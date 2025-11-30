@@ -148,7 +148,7 @@ IPAddress::IPAddress(GVariant *addr)
     glib2::Utils::checkParams(__func__, addr, "(iay)", 2);
 
     family = glib2::Value::Extract<int>(addr, 0);
-    GVariant *ip_array = g_variant_get_child_value(addr, 1);
+    GVariant *ip_array = glib2::Value::ExtractChild(addr, 1);
     ipaddr = glib2::Value::ExtractVector<std::byte>(ip_array, nullptr);
 
     validate_data();

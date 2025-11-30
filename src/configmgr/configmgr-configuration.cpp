@@ -825,7 +825,7 @@ void Configuration::method_set_override(DBus::Object::Method::Arguments::Ptr arg
     GVariant *params = args->GetMethodParameters();
 
     auto name = filter_ctrl_chars(glib2::Value::Extract<std::string>(params, 0), true);
-    GVariant *value = g_variant_get_variant(g_variant_get_child_value(params, 1));
+    auto *value = glib2::Value::Extract<GVariant *>(params, 1);
 
     const Override o = set_override(name, value);
 

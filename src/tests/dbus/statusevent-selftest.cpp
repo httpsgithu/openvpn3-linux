@@ -210,20 +210,19 @@ int test2()
     std::cout << "-- Testing .GetGVariantTuple() ... ";
     Events::Status reverse(StatusMajor::CONNECTION, StatusMinor::CONN_INIT, "Yet another test");
     GVariant *revparse = reverse.GetGVariantTuple();
-    guint maj = 0;
-    guint min = 0;
-    gchar *msg = nullptr;
+    auto maj = glib2::Value::Extract<StatusMajor>(revparse, 0);
+    auto min = glib2::Value::Extract<StatusMinor>(revparse, 1);
+    auto msg = glib2::Value::Extract<std::string>(revparse, 2);
 
-    g_variant_get(revparse, "(uus)", &maj, &min, &msg);
-    if ((guint)reverse.major != maj
-        || (guint)reverse.minor != min
-        || g_strcmp0(reverse.message.c_str(), msg) != 0)
+    if (reverse.major != maj
+        || reverse.minor != min
+        || reverse.message != msg)
     {
         std::cout << "FAILED" << std::endl;
         std::cout << "     Input: " << reverse << std::endl;
         std::cout << "    Output: "
-                  << "maj=" << std::to_string(maj) << ", "
-                  << "min=" << std::to_string(min) << ", "
+                  << "maj=" << maj << ", "
+                  << "min=" << min << ", "
                   << "msg='" << msg << "'" << std::endl;
         ++ret;
     }
@@ -231,7 +230,6 @@ int test2()
     {
         std::cout << "PASSED" << std::endl;
     }
-    g_free(msg);
     g_variant_unref(revparse);
 
     try
