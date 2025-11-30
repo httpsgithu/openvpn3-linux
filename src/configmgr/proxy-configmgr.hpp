@@ -220,7 +220,7 @@ class OpenVPN3ConfigurationProxy
     {
         GVariant *res = proxy->Call(proxy_tgt,
                                     "LookupConfigName",
-                                    g_variant_new("(s)", cfgname.c_str()));
+                                    glib2::Value::Create(cfgname));
         if (nullptr == res)
         {
             throw CfgMgrProxyException("Failed to lookup configuration names");
@@ -247,7 +247,7 @@ class OpenVPN3ConfigurationProxy
         }
         GVariant *res = proxy->Call(proxy_tgt,
                                     "SearchByTag",
-                                    g_variant_new("(s)", tagname.c_str()));
+                                    glib2::Value::Create(tagname));
         if (nullptr == res)
         {
             throw CfgMgrProxyException("Failed to search for configuration tags");
@@ -271,7 +271,7 @@ class OpenVPN3ConfigurationProxy
     {
         GVariant *res = proxy->Call(proxy_tgt,
                                     "SearchByOwner",
-                                    g_variant_new("(s)", owner.c_str()));
+                                    glib2::Value::Create(owner));
         if (nullptr == res)
         {
             throw CfgMgrProxyException("Failed to search for configuration tags");
@@ -455,7 +455,7 @@ class OpenVPN3ConfigurationProxy
     {
         GVariant *res = proxy->Call(proxy_tgt,
                                     "AccessGrant",
-                                    g_variant_new("(u)", uid));
+                                    glib2::Value::Create(uid));
         if (NULL == res)
         {
             throw DBus::Proxy::Exception("AccessGrant() call failed");
@@ -473,7 +473,7 @@ class OpenVPN3ConfigurationProxy
     {
         GVariant *res = proxy->Call(proxy_tgt,
                                     "AccessRevoke",
-                                    g_variant_new("(u)", uid));
+                                    glib2::Value::Create(uid));
         if (NULL == res)
         {
             throw DBus::Proxy::Exception("AccessRevoke() call failed");
@@ -772,7 +772,7 @@ class OpenVPN3ConfigurationProxy
     {
         proxy->Call(proxy_tgt,
                     "UnsetOverride",
-                    g_variant_new("(s)", override.key.c_str()));
+                    glib2::Value::Create(override.key));
     }
 
 
