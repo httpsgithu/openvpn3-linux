@@ -115,21 +115,21 @@ bool Manager::ProtectSocket(int socket, const std::string &remote, bool ipv6, co
     {
         // If protecting socked fd is disabled, we get
         // a -1 for the socket
+        GVariantBuilder *params = glib2::Builder::Create("(sbo)");
+        glib2::Builder::Add<std::string>(params, remote);
+        glib2::Builder::Add<bool>(params, ipv6);
+        glib2::Builder::Add<DBus::Object::Path>(params, devpath);
+
         GVariant *res;
         if (socket < 0)
         {
-            res = proxy->Call(tgt_mgr,
-                              "ProtectSocket",
-                              g_variant_new("(sbo)", remote.c_str(), ipv6, devpath.c_str()));
+            res = proxy->Call(tgt_mgr, "ProtectSocket", glib2::Builder::Finish(params));
         }
         else
         {
             res = proxy->SendFD(tgt_mgr,
                                 "ProtectSocket",
-                                g_variant_new("(sbo)",
-                                              remote.c_str(),
-                                              ipv6,
-                                              devpath.c_str()),
+                                glib2::Builder::Finish(params),
                                 socket);
         }
         glib2::Utils::checkParams(__func__, res, "(b)", 1);

@@ -111,11 +111,12 @@ int test2()
     try
     {
         std::cout << "-- Testing parsing GVariantDict - incorrect data ... ";
-        data = g_variant_new("(uuss)",
-                             (guint)StatusMajor::CONFIG,
-                             (guint)StatusMinor::CFG_OK,
-                             "Test status",
-                             "Invalid data");
+        GVariantBuilder *params = glib2::Builder::Create("(uuss)");
+        glib2::Builder::Add(params, StatusMajor::CONFIG);
+        glib2::Builder::Add(params, StatusMinor::CFG_OK);
+        glib2::Builder::Add(params, "Test status");
+        glib2::Builder::Add(params, "Invalid data");
+        data = glib2::Builder::Finish(params);
         Events::Status parsed(data);
         std::cout << "FAILED - should not be parsed successfully." << std::endl;
         ++ret;
@@ -141,13 +142,13 @@ int test2()
     try
     {
         std::cout << "-- Testing parsing GVariantDict - correct dict ... ";
-        GVariantBuilder *b = g_variant_builder_new(G_VARIANT_TYPE("a{sv}"));
-        g_variant_builder_add(b, "{sv}", "major", g_variant_new_uint32((guint)StatusMajor::CONFIG));
-        g_variant_builder_add(b, "{sv}", "minor", g_variant_new_uint32((guint)StatusMinor::CFG_OK));
-        g_variant_builder_add(b, "{sv}", "status_message", g_variant_new_string("Test status"));
-        GVariant *data = g_variant_builder_end(b);
-        g_variant_builder_unref(b);
+        GVariantDict *dict = glib2::Dict::Create();
+        glib2::Dict::Add(dict, "major", StatusMajor::CONFIG);
+        glib2::Dict::Add(dict, "minor", StatusMinor::CFG_OK);
+        glib2::Dict::Add(dict, "status_message", "Test status");
+        GVariant *data = glib2::Dict::Finish(dict);
         Events::Status parsed(data);
+        g_variant_unref(data);
 
         if (StatusMajor::CONFIG != parsed.major
             || StatusMinor::CFG_OK != parsed.minor
@@ -161,7 +162,6 @@ int test2()
         {
             std::cout << "PASSED" << std::endl;
         }
-        g_variant_unref(data);
     }
     catch (DBus::Exception &excp)
     {
@@ -172,10 +172,11 @@ int test2()
     try
     {
         std::cout << "-- Testing parsing GVariant Tuple ... ";
-        GVariant *data = g_variant_new("(uus)",
-                                       (guint)StatusMajor::CONFIG,
-                                       (guint)StatusMinor::CFG_REQUIRE_USER,
-                                       "Parse testing again");
+        GVariantBuilder *params = glib2::Builder::Create("(uus)");
+        glib2::Builder::Add(params, StatusMajor::CONFIG);
+        glib2::Builder::Add(params, StatusMinor::CFG_REQUIRE_USER);
+        glib2::Builder::Add(params, "Parse testing again");
+        GVariant *data = glib2::Builder::Finish(params);
         Events::Status parsed(data);
         g_variant_unref(data);
 

@@ -229,15 +229,15 @@ GVariant *RequiresQueue::QueueFetchGVariant(GVariant *parameters) const
                                                  "User input already provided");
                 }
 
-                GVariant *elmt = g_variant_new("(uuussb)",
-                                               e.type,
-                                               e.group,
-                                               e.id,
-                                               e.name.c_str(),
-                                               e.user_description.c_str(),
-                                               e.hidden_input);
+                GVariantBuilder *elmts = glib2::Builder::Create("(uuussb)");
+                glib2::Builder::Add(elmts, e.type);
+                glib2::Builder::Add(elmts, e.group);
+                glib2::Builder::Add(elmts, e.id);
+                glib2::Builder::Add(elmts, e.name);
+                glib2::Builder::Add(elmts, e.user_description);
+                glib2::Builder::Add(elmts, e.hidden_input);
                 callbacks.RunCallback(CallbackType::QUEUE_FETCH);
-                return elmt;
+                return glib2::Builder::Finish(elmts);
             }
         }
     }
@@ -416,15 +416,12 @@ GVariant *RequiresQueue::QueueCheckTypeGroupGVariant() const noexcept
     std::vector<std::tuple<ClientAttentionType, ClientAttentionGroup>> qchk_res = QueueCheckTypeGroup();
 
     GVariantBuilder *bld = glib2::Builder::Create("a(uu)");
-    for (auto &e : qchk_res)
+    for (const auto &[type, group] : qchk_res)
     {
-        ClientAttentionType type;
-        ClientAttentionGroup group;
-        std::tie(type, group) = e;
-        glib2::Builder::Add(bld,
-                            g_variant_new("(uu)",
-                                          static_cast<uint32_t>(type),
-                                          static_cast<uint32_t>(group)));
+        GVariantBuilder *e = glib2::Builder::Create("(uu)");
+        glib2::Builder::Add(e, type);
+        glib2::Builder::Add(e, group);
+        glib2::Builder::Add(bld, glib2::Builder::Finish(e));
     }
     callbacks.RunCallback(CallbackType::CHECK_TYPE_GROUP);
     return glib2::Builder::Finish(bld);

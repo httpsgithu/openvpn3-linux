@@ -116,10 +116,11 @@ bool Status::Check(StatusMajor maj, std::vector<StatusMinor> min) const
 
 GVariant *Status::GetGVariantTuple() const
 {
-    return g_variant_new("(uus)",
-                         static_cast<guint32>(major),
-                         static_cast<guint32>(minor),
-                         message.c_str());
+    GVariantBuilder *bld = glib2::Builder::Create("(uus)");
+    glib2::Builder::Add(bld, major);
+    glib2::Builder::Add(bld, minor);
+    glib2::Builder::Add(bld, message);
+    return glib2::Builder::Finish(bld);
 }
 
 

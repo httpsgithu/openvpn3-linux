@@ -20,6 +20,7 @@
 
 #include <gdbuspp/connection.hpp>
 #include <gdbuspp/proxy.hpp>
+#include <gdbuspp/glib2/utils.hpp>
 
 #include "common/requiresqueue.hpp"
 
@@ -139,9 +140,13 @@ class DBusRequiresQueueProxy
                                    ClientAttentionGroup group,
                                    uint32_t id)
     {
+        GVariantBuilder *bld = glib2::Builder::Create("(uuu)");
+        glib2::Builder::Add(bld, type);
+        glib2::Builder::Add(bld, group);
+        glib2::Builder::Add(bld, id);
         GVariant *slot = proxy->Call(target,
                                      method_queuefetch,
-                                     g_variant_new("(uuu)", type, group, id));
+                                     glib2::Builder::Finish(bld));
         struct RequiresSlot ret = deserialize(slot);
         g_variant_unref(slot);
         return ret;
@@ -210,9 +215,12 @@ class DBusRequiresQueueProxy
     std::vector<uint32_t> QueueCheck(ClientAttentionType type,
                                      ClientAttentionGroup group)
     {
+        GVariantBuilder *bld = glib2::Builder::Create("(uu)");
+        glib2::Builder::Add(bld, type);
+        glib2::Builder::Add(bld, group);
         GVariant *res = proxy->Call(target,
                                     method_queuecheck,
-                                    g_variant_new("(uu)", type, group));
+                                    glib2::Builder::Finish(bld));
 
         std::vector<uint32_t> ret = glib2::Value::ExtractVector<uint32_t>(res);
         return ret;
@@ -226,13 +234,14 @@ class DBusRequiresQueueProxy
      */
     void ProvideResponse(struct RequiresSlot &slot)
     {
+        GVariantBuilder *bld = glib2::Builder::Create("(uuus)");
+        glib2::Builder::Add(bld, slot.type);
+        glib2::Builder::Add(bld, slot.group);
+        glib2::Builder::Add(bld, slot.id);
+        glib2::Builder::Add(bld, slot.value);
         GVariant *res = proxy->Call(target,
                                     method_provideresponse,
-                                    g_variant_new("(uuus)",
-                                                  slot.type,
-                                                  slot.group,
-                                                  slot.id,
-                                                  slot.value.c_str()));
+                                    glib2::Builder::Finish(bld));
         g_variant_unref(res);
     }
 

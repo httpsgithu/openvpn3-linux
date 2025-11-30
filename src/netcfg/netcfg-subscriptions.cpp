@@ -106,9 +106,11 @@ GVariant *NetCfgSubscriptions::List()
                               "(NetCfgSubscriptions::List)");
     }
 
-    for (const auto &sub : subscriptions)
+    for (const auto &[subscription_id, filter_mask] : subscriptions)
     {
-        g_variant_builder_add(bld, "(su)", sub.first.c_str(), sub.second);
+        glib2::Builder::Add(bld, subscription_id);
+        glib2::Builder::Add(bld, filter_mask);
+
     }
     return glib2::Builder::Finish(bld);
 }

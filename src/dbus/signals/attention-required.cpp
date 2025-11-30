@@ -81,10 +81,11 @@ bool AttentionRequired::Send(const ClientAttentionType &type,
                              const ClientAttentionGroup &group,
                              const std::string &msg) const
 {
-    return EmitSignal(g_variant_new(GetDBusType(),
-                                    static_cast<uint32_t>(type),
-                                    static_cast<uint32_t>(group),
-                                    msg.c_str()));
+    GVariantBuilder *bld = glib2::Builder::Create(GetDBusType());
+    glib2::Builder::Add(bld, type);
+    glib2::Builder::Add(bld, group);
+    glib2::Builder::Add(bld, msg);
+    return EmitSignal(glib2::Builder::Finish(bld));
 }
 
 } // namespace Signals

@@ -110,12 +110,12 @@ int test2_without_session_token()
     try
     {
         std::cout << "-- Testing parsing GVariantDict - incorrect data ... ";
-        data = g_variant_new("(uuis)",
-                             static_cast<uint32_t>(StatusMajor::CONFIG),
-                             static_cast<uint32_t>(StatusMinor::CFG_OK),
-                             1234,
-                             "Invalid data");
-        auto parsed = Events::ParseLog(data);
+        GVariantBuilder *data = glib2::Builder::Create("(uuis)");
+        glib2::Builder::Add(data, StatusMajor::CONFIG);
+        glib2::Builder::Add(data, StatusMinor::CFG_OK);
+        glib2::Builder::Add<int32_t>(data, 1234);
+        glib2::Builder::Add<std::string>(data, "Invalid data");
+        auto parsed = Events::ParseLog(glib2::Builder::Finish(data));
         std::cout << "FAILED - should not be parsed successfully." << std::endl;
         ++ret;
     }
@@ -170,12 +170,13 @@ int test2_without_session_token()
     try
     {
         std::cout << "-- Testing parsing GVariant Tuple (uus) ... ";
-        GVariant *data = g_variant_new("(uus)",
-                                       static_cast<uint32_t>(LogGroup::BACKENDPROC),
-                                       static_cast<uint32_t>(LogCategory::INFO),
-                                       "Parse testing again");
-        auto parsed = Events::ParseLog(data);
-        g_variant_unref(data);
+        GVariantBuilder *data = glib2::Builder::Create("(uus)");
+        glib2::Builder::Add(data, LogGroup::BACKENDPROC);
+        glib2::Builder::Add(data, LogCategory::INFO);
+        glib2::Builder::Add<std::string>(data, "Parse testing again");
+        GVariant *params = glib2::Builder::Finish(data);
+        auto parsed = Events::ParseLog(params);
+        g_variant_unref(params);
 
         if (LogGroup::BACKENDPROC != parsed.group
             || LogCategory::INFO != parsed.category
@@ -303,13 +304,14 @@ int test2_with_session_token()
     try
     {
         std::cout << "-- Testing parsing GVariant Tuple with session token (uuss) ... ";
-        GVariant *data = g_variant_new("(uuss)",
-                                       static_cast<LogGroup>(LogGroup::BACKENDPROC),
-                                       static_cast<LogCategory>(LogCategory::INFO),
-                                       "session_token_val",
-                                       "Parse testing again");
-        auto parsed = Events::ParseLog(data);
-        g_variant_unref(data);
+        GVariantBuilder *data = glib2::Builder::Create("(uuss)");
+        glib2::Builder::Add(data, LogGroup::BACKENDPROC);
+        glib2::Builder::Add(data, LogCategory::INFO);
+        glib2::Builder::Add<std::string>(data, "session_token_val");
+        glib2::Builder::Add<std::string>(data, "Parse testing again");
+        GVariant *params = glib2::Builder::Finish(data);
+        auto parsed = Events::ParseLog(params);
+        g_variant_unref(params);
 
         if (LogGroup::BACKENDPROC != parsed.group
             || LogCategory::INFO != parsed.category

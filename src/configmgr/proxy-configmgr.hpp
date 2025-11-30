@@ -155,13 +155,14 @@ class OpenVPN3ConfigurationProxy
                               bool single_use,
                               bool persistent)
     {
+        GVariantBuilder *params = glib2::Builder::Create("(ssbb)");
+        glib2::Builder::Add(params, name);
+        glib2::Builder::Add(params, config_blob);
+        glib2::Builder::Add(params, single_use);
+        glib2::Builder::Add(params, persistent);
         GVariant *res = proxy->Call(proxy_tgt,
                                     "Import",
-                                    g_variant_new("(ssbb)",
-                                                  name.c_str(),
-                                                  config_blob.c_str(),
-                                                  single_use,
-                                                  persistent));
+                                    glib2::Builder::Finish(params));
         if (NULL == res)
         {
             throw CfgMgrProxyException("Failed to import configuration");
@@ -494,7 +495,7 @@ class OpenVPN3ConfigurationProxy
 
     /**
      *  Should the ownership of the configuration profile be
-     *  transfered to newly created sessions?
+     *  transferred to newly created sessions?
      *
      *  This means it will be the owner of the configuration profile
      *  who will own the VPN session, not the user starting the session
@@ -587,12 +588,16 @@ class OpenVPN3ConfigurationProxy
         {
             DBus::Proxy::Exception("SetOverride for bool called for non-bool override");
         }
-        GVariant *val = glib2::Value::Create(value);
+
         try
         {
+            GVariantBuilder *params = glib2::Builder::Create("(sv)");
+            glib2::Builder::Add(params, override.key);
+            glib2::Builder::Add<GVariant *>(params, glib2::Value::Create(value));
+
             proxy->Call(proxy_tgt,
                         "SetOverride",
-                        g_variant_new("(sv)", override.key.c_str(), val));
+                        glib2::Builder::Finish(params));
         }
         catch (const DBus::Exception &excp)
         {
@@ -612,12 +617,16 @@ class OpenVPN3ConfigurationProxy
         {
             DBus::Proxy::Exception("SetOverride for string called for non-string override");
         }
+
         try
         {
-            GVariant *val = glib2::Value::Create(value);
+            GVariantBuilder *params = glib2::Builder::Create("(sv)");
+            glib2::Builder::Add(params, override.key);
+            glib2::Builder::Add<GVariant *>(params, glib2::Value::Create(value));
+
             proxy->Call(proxy_tgt,
                         "SetOverride",
-                        g_variant_new("(sv)", override.key.c_str(), val));
+                        glib2::Builder::Finish(params));
         }
         catch (const DBus::Exception &excp)
         {

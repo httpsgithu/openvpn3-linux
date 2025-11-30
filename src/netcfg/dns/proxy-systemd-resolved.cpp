@@ -323,7 +323,7 @@ std::vector<std::string> Link::SetDomains(const SearchDomain::List &doms)
         GVariant *r = dom.GetGVariant();
         if (r)
         {
-            g_variant_builder_add_value(b, r);
+            glib2::Builder::Add(b, r);
             applied.push_back(dom.search);
         }
     }

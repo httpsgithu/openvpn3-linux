@@ -125,22 +125,21 @@ LogTag::Ptr Log::GetLogTag() const noexcept
 
 GVariant *Log::GetGVariantTuple() const
 {
-    if (Format::SESSION_TOKEN == format
-        || (Format::AUTO == format && !session_token.empty()))
+
+    bool session_token_type = Format::SESSION_TOKEN == format
+                              || (Format::AUTO == format && !session_token.empty());
+
+    GVariantBuilder *bld = glib2::Builder::Create(session_token_type ? "(uuss)" : "(uus)");
+
+    glib2::Builder::Add(bld, group);
+    glib2::Builder::Add(bld, category);
+    if (session_token_type)
     {
-        return g_variant_new("(uuss)",
-                             static_cast<uint32_t>(group),
-                             static_cast<uint32_t>(category),
-                             session_token.c_str(),
-                             message.c_str());
+        glib2::Builder::Add(bld, session_token);
     }
-    else
-    {
-        return g_variant_new("(uus)",
-                             static_cast<uint32_t>(group),
-                             static_cast<uint32_t>(category),
-                             message.c_str());
-    }
+    glib2::Builder::Add(bld, message);
+
+    return glib2::Builder::Finish(bld);
 }
 
 

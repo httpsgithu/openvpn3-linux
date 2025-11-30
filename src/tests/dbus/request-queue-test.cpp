@@ -160,11 +160,10 @@ int main(int argc, char **argv)
             return 1;
         }
 
-        r = proxy->Call(prxtgt,
-                        "Validate",
-                        g_variant_new("(su)",
-                                      "generated-data_",
-                                      chkval));
+        GVariantBuilder *params = glib2::Builder::Create("(su)");
+        glib2::Builder::Add<std::string>(params, "generated-data_");
+        glib2::Builder::Add<uint32_t>(params, chkval);
+        r = proxy->Call(prxtgt, "Validate", glib2::Builder::Finish(params));
         auto chk = glib2::Value::Extract<bool>(r, 0);
         g_variant_unref(r);
         if (!chk)

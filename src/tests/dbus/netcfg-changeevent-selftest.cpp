@@ -207,7 +207,11 @@ int test_gvariant()
 
 
     std::cout << "-- Testing parsing GVariant data (invalid data)... ";
-    GVariant *invalid = g_variant_new("(uus)", 123, 456, "Invalid data");
+    GVariantBuilder *invalid_bld = glib2::Builder::Create("(uus)");
+    glib2::Builder::Add<uint32_t>(invalid_bld, 123);
+    glib2::Builder::Add<uint32_t>(invalid_bld, 456);
+    glib2::Builder::Add<std::string>(invalid_bld, "Invalid data");
+    GVariant *invalid = glib2::Builder::Finish(invalid_bld);
     try
     {
         NetCfgChangeEvent invalid_event(invalid);

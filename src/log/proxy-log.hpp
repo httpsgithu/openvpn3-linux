@@ -18,6 +18,7 @@
 #include <memory>
 
 #include <gdbuspp/connection.hpp>
+#include <gdbuspp/glib2/utils.hpp>
 #include <gdbuspp/proxy.hpp>
 #include <gdbuspp/proxy/utils.hpp>
 
@@ -263,13 +264,13 @@ class LogServiceProxy
 
     void AssignSession(const DBus::Object::Path &sesspath, const std::string &interf)
     {
+        GVariantBuilder *params = glib2::Builder::Create("(os)");
+        glib2::Builder::Add(params, sesspath);
+        glib2::Builder::Add(params, interf);
 
         GVariant *empty = logservice->Call(logtarget,
                                            "AssignSession",
-                                           g_variant_new("(os)",
-                                                         sesspath.c_str(),
-                                                         interf.c_str()),
-                                           false);
+                                           glib2::Builder::Finish(params));
         g_variant_unref(empty);
     }
 
@@ -277,11 +278,13 @@ class LogServiceProxy
     LogProxy::Ptr ProxyLogEvents(const std::string &target,
                                  const DBus::Object::Path &session_path) const
     {
+        GVariantBuilder *bld = glib2::Builder::Create("(so)");
+        glib2::Builder::Add(bld, target);
+        glib2::Builder::Add(bld, session_path);
         GVariant *res = logservice->Call(logtarget,
                                          "ProxyLogEvents",
-                                         g_variant_new("(so)",
-                                                       target.c_str(),
-                                                       session_path.c_str()));
+                                         glib2::Builder::Finish(bld));
+
         if (nullptr == res)
         {
             throw LogServiceProxyException("ProxyLogEvents call failed");
