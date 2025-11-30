@@ -23,7 +23,7 @@ NetCfgChangeEvent::NetCfgChangeEvent(const NetCfgChangeType &t,
 
 NetCfgChangeEvent::NetCfgChangeEvent(GVariant *params)
 {
-    std::string g_type(g_variant_get_type_string(params));
+    std::string g_type = glib2::DataType::Extract(params);
     if ("(usa{ss})" != g_type)
     {
         throw NetCfgException(std::string("Invalid GVariant data type: ")

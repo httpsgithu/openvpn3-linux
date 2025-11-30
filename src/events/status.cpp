@@ -45,7 +45,7 @@ Status::Status(GVariant *status)
     reset();
     if (nullptr != status)
     {
-        std::string g_type(g_variant_get_type_string(status));
+        std::string g_type = glib2::DataType::Extract(status);
         if ("(uus)" == g_type)
         {
             parse_tuple(status);

@@ -272,7 +272,7 @@ class DBusRequiresQueueProxy
             throw RequiresQueueException("indata GVariant pointer is NULL");
         }
 
-        std::string data_type = std::string(g_variant_get_type_string(indata));
+        std::string data_type = glib2::DataType::Extract(indata);
         if ("(uuussb)" != data_type)
         {
             throw RequiresQueueException("Failed parsing the requires queue result");

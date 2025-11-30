@@ -32,7 +32,7 @@ Event::Event(const std::string &path,
 
 Event::Event(GVariant *params)
 {
-    std::string g_type(g_variant_get_type_string(params));
+    std::string g_type = glib2::DataType::Extract(params);
     if ("(oqu)" != g_type)
     {
         throw ConfigManager::Exception("Invalid data type for ConfigManager::Event()");

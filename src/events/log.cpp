@@ -304,7 +304,7 @@ Log parse_dict(GVariant *logevent)
     try
     {
         auto session_token = glib2::Dict::Lookup<std::string>(logevent,
-                                                                     "log_session_token");
+                                                              "log_session_token");
         return Log(group, category, session_token, message);
     }
     catch (const glib2::Utils::Exception &)
@@ -383,7 +383,7 @@ Log ParseLog(GVariant *logev, DBus::Signals::Target::Ptr sndr)
 {
     if (nullptr != logev)
     {
-        std::string g_type(g_variant_get_type_string(logev));
+        std::string g_type = glib2::DataType::Extract(logev);
         Log event;
         if ("a{sv}" == g_type)
         {
