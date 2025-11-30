@@ -109,9 +109,7 @@ TEST(NetCfgChangeEvent, gvariant_GetVariant)
                               "tun22",
                               {{"ip_address", "2001:db8:a050::1"}, {"prefix_size", "64"}});
     GVariant *chk = g_state.GetGVariant();
-    gchar *dmp = g_variant_print(chk, true);
-    std::string dump_check(dmp);
-    g_free(dmp);
+    std::string dump_check = glib2::Utils::DumpToString(chk);
     g_variant_unref(chk);
 
     std::string expect = "(uint32 16, 'tun22', {'ip_address': '2001:db8:a050::1', 'prefix_size': '64'})";
@@ -126,31 +124,24 @@ TEST(NetCfgChangeEvent, gvariant_get)
                               {{"ip_address", "2001:db8:a050::1"}, {"prefix_size", "64"}});
     GVariant *chk = g_state.GetGVariant();
 
-    guint type = 0;
-    gchar *dev_s = nullptr;
-    GVariantIter *det_g = nullptr;
-    g_variant_get(chk, "(usa{ss})", &type, &dev_s, &det_g);
+    auto type = glib2::Value::Extract<NetCfgChangeType>(chk, 0);
+    auto dev_s = glib2::Value::Extract<std::string>(chk, 1);
+    GVariant *details = glib2::Value::ExtractChild(chk, 2);
     g_variant_unref(chk);
 
     NetCfgChangeDetails det_s;
-    GVariant *kv = nullptr;
-    while ((kv = g_variant_iter_next_value(det_g)))
+    auto parse_details = [&det_s](GVariant *record)
     {
-        gchar *key = nullptr;
-        gchar *value = nullptr;
-        g_variant_get(kv, "{ss}", &key, &value);
+        auto key = glib2::Value::Extract<std::string>(record, 0);
+        auto value = glib2::Value::Extract<std::string>(record, 1);
+        det_s[key] = value;
+    };
+    glib2::Value::IterateArray(details, parse_details);
+    g_variant_unref(details);
 
-        det_s[key] = std::string(value);
-        g_free(key);
-        g_free(value);
-        g_variant_unref(kv);
-    }
-    g_variant_iter_free(det_g);
-
-    ASSERT_EQ(type, (guint)g_state.type);
+    ASSERT_EQ(type, g_state.type);
     ASSERT_EQ(dev_s, g_state.device);
     ASSERT_EQ(det_s, g_state.details);
-    g_free(dev_s);
 }
 
 
@@ -167,23 +158,15 @@ TEST(NetCfgChangeEvent, parse_gvariant_valid_data)
     // All values below here must match the values as provided in event
     //
     GVariantBuilder *b = glib2::Builder::Create("(usa{ss})");
-    glib2::Builder::Add(b, NetCfgChangeType::ROUTE_ADDED);
-    glib2::Builder::Add(b, std::string("tun33"));
+    glib2::Builder::Add(b, event.type);
+    glib2::Builder::Add(b, event.device);
 
     // Add the details - key/value dictionary
     glib2::Builder::OpenChild(b, "a{ss}");
 
-    // Add IP address
-    glib2::Builder::OpenChild(b, "{ss}");
-    glib2::Builder::Add(b, std::string("ip_address"));
-    glib2::Builder::Add(b, std::string("2001:db8:a050::1"));
-    glib2::Builder::CloseChild(b);
-
-    // Add prefix
-    glib2::Builder::OpenChild(b, "{ss}");
-    glib2::Builder::Add(b, std::string("prefix_size"));
-    glib2::Builder::Add(b, std::string("64"));
-    glib2::Builder::CloseChild(b);
+    // Add IP address / prefix
+    glib2::Builder::AddKeyValue<std::string, std::string>(b, "ip_address", event.details["ip_address"]);
+    glib2::Builder::AddKeyValue<std::string, std::string>(b, "prefix_size", event.details["prefix_size"]);
 
     // Details ready
     glib2::Builder::CloseChild(b);
@@ -199,7 +182,11 @@ TEST(NetCfgChangeEvent, parse_gvariant_valid_data)
 
 TEST(NetCfgChangeEvent, parse_gvariant_invalid_data)
 {
-    GVariant *invalid = g_variant_new("(uus)", 123, 456, "Invalid data");
+    GVariantBuilder *params = glib2::Builder::Create("(uus)");
+    glib2::Builder::Add<uint32_t>(params, 123);
+    glib2::Builder::Add<uint32_t>(params, 456);
+    glib2::Builder::Add<std::string>(params, "Invalid data");
+    GVariant *invalid = glib2::Builder::Finish(params);
     ASSERT_THROW(NetCfgChangeEvent invalid_event(invalid),
                  NetCfgException);
     g_variant_unref(invalid);

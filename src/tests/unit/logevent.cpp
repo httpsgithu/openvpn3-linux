@@ -122,11 +122,12 @@ TEST(LogEvent, log_category_str)
 
 TEST(LogEvent, parse_gvariant_tuple_invalid)
 {
-    GVariant *data = g_variant_new("(uuis)",
-                                   (guint)StatusMajor::CONFIG,
-                                   (guint)StatusMinor::CFG_OK,
-                                   1234,
-                                   "Invalid data");
+    GVariantBuilder *params = glib2::Builder::Create("(uuis)");
+    glib2::Builder::Add(params, StatusMajor::CONFIG);
+    glib2::Builder::Add(params, StatusMinor::CFG_OK);
+    glib2::Builder::Add<int32_t>(params, 1234);
+    glib2::Builder::Add<std::string>(params, "Invalid data");
+    GVariant *data = glib2::Builder::Finish(params);
     ASSERT_THROW(auto parsed = Events::ParseLog(data), LogException);
     if (nullptr != data)
     {
@@ -137,12 +138,11 @@ TEST(LogEvent, parse_gvariant_tuple_invalid)
 
 TEST(LogEvent, parse_gvariant_dict)
 {
-    GVariantBuilder *b = g_variant_builder_new(G_VARIANT_TYPE("a{sv}"));
-    g_variant_builder_add(b, "{sv}", "log_group", g_variant_new_uint32((guint)LogGroup::LOGGER));
-    g_variant_builder_add(b, "{sv}", "log_category", g_variant_new_uint32((guint)LogCategory::DEBUG));
-    g_variant_builder_add(b, "{sv}", "log_message", g_variant_new_string("Test log message"));
-    GVariant *data = g_variant_builder_end(b);
-    g_variant_builder_unref(b);
+    GVariantDict *dict = glib2::Dict::Create();
+    glib2::Dict::Add(dict, "log_group", LogGroup::LOGGER);
+    glib2::Dict::Add(dict, "log_category", LogCategory::DEBUG);
+    glib2::Dict::Add<std::string>(dict, "log_message", "Test log message");
+    GVariant *data = glib2::Dict::Finish(dict);
 
     auto parsed = Events::ParseLog(data);
     g_variant_unref(data);
@@ -156,10 +156,11 @@ TEST(LogEvent, parse_gvariant_dict)
 
 TEST(LogEvent, parse_gvariant_tuple)
 {
-    GVariant *data = g_variant_new("(uus)",
-                                   (guint)LogGroup::BACKENDPROC,
-                                   (guint)LogCategory::INFO,
-                                   "Parse testing again");
+    GVariantBuilder *params = glib2::Builder::Create("(uus)");
+    glib2::Builder::Add(params, LogGroup::BACKENDPROC);
+    glib2::Builder::Add(params, LogCategory::INFO);
+    glib2::Builder::Add<std::string>(params, "Parse testing again");
+    GVariant *data = glib2::Builder::Finish(params);
     auto parsed = Events::ParseLog(data);
     g_variant_unref(data);
 
@@ -175,15 +176,12 @@ TEST(LogEvent, GetVariantTuple)
     Events::Log reverse(LogGroup::BACKENDSTART, LogCategory::WARN, "Yet another test");
     GVariant *revparse = reverse.GetGVariantTuple();
 
-    guint grp = 0;
-    guint ctg = 0;
-    gchar *msg_c = nullptr;
-    g_variant_get(revparse, "(uus)", &grp, &ctg, &msg_c);
-    std::string msg(msg_c);
-    g_free(msg_c);
+    auto grp = glib2::Value::Extract<LogGroup>(revparse, 0);
+    auto ctg = glib2::Value::Extract<LogCategory>(revparse, 1);
+    auto msg = glib2::Value::Extract<std::string>(revparse, 2);
 
-    ASSERT_EQ(reverse.group, (LogGroup)grp);
-    ASSERT_EQ(reverse.category, (LogCategory)ctg);
+    ASSERT_EQ(reverse.group, grp);
+    ASSERT_EQ(reverse.category, ctg);
     ASSERT_EQ(reverse.message, msg);
     g_variant_unref(revparse);
 }
@@ -207,13 +205,12 @@ TEST(LogEvent, GetVariantDict)
 
 TEST(LogEvent, parse_gvariant_dict_session_token)
 {
-    GVariantBuilder *b = g_variant_builder_new(G_VARIANT_TYPE("a{sv}"));
-    g_variant_builder_add(b, "{sv}", "log_group", g_variant_new_uint32((guint)LogGroup::LOGGER));
-    g_variant_builder_add(b, "{sv}", "log_category", g_variant_new_uint32((guint)LogCategory::DEBUG));
-    g_variant_builder_add(b, "{sv}", "log_session_token", g_variant_new_string("session_token_value"));
-    g_variant_builder_add(b, "{sv}", "log_message", g_variant_new_string("Test log message"));
-    GVariant *data = g_variant_builder_end(b);
-    g_variant_builder_unref(b);
+    GVariantDict *dict = glib2::Dict::Create();
+    glib2::Dict::Add(dict, "log_group", LogGroup::LOGGER);
+    glib2::Dict::Add(dict, "log_category", LogCategory::DEBUG);
+    glib2::Dict::Add<std::string>(dict, "log_session_token", "session_token_value");
+    glib2::Dict::Add<std::string>(dict, "log_message", "Test log message");
+    GVariant *data = glib2::Dict::Finish(dict);
     auto parsed = Events::ParseLog(data);
     g_variant_unref(data);
 
@@ -227,11 +224,12 @@ TEST(LogEvent, parse_gvariant_dict_session_token)
 
 TEST(LogEvent, parse_gvariant_tuple_session_token)
 {
-    GVariant *data = g_variant_new("(uuss)",
-                                   (guint)LogGroup::BACKENDPROC,
-                                   (guint)LogCategory::INFO,
-                                   "session_token_val",
-                                   "Parse testing again");
+    GVariantBuilder *params = glib2::Builder::Create("(uuss)");
+    glib2::Builder::Add(params, LogGroup::BACKENDPROC);
+    glib2::Builder::Add(params, LogCategory::INFO);
+    glib2::Builder::Add<std::string>(params, "session_token_val");
+    glib2::Builder::Add<std::string>(params, "Parse testing again");
+    GVariant *data = glib2::Builder::Finish(params);
     auto parsed = Events::ParseLog(data);
     g_variant_unref(data);
 
@@ -248,20 +246,13 @@ TEST(LogEvent, GetVariantTuple_session_token)
     Events::Log reverse(LogGroup::BACKENDSTART, LogCategory::WARN, "YetAnotherSessionToken", "Yet another test");
     GVariant *revparse = reverse.GetGVariantTuple();
 
-    guint grp = 0;
-    guint ctg = 0;
-    gchar *sesstok_c = nullptr;
-    gchar *msg_c = nullptr;
-    g_variant_get(revparse, "(uuss)", &grp, &ctg, &sesstok_c, &msg_c);
+    auto grp = glib2::Value::Extract<LogGroup>(revparse, 0);
+    auto ctg = glib2::Value::Extract<LogCategory>(revparse, 1);
+    auto sesstok = glib2::Value::Extract<std::string>(revparse, 2);
+    auto msg = glib2::Value::Extract<std::string>(revparse, 3);
 
-    std::string sesstok(sesstok_c);
-    g_free(sesstok_c);
-    std::string msg(msg_c);
-    g_free(msg_c);
-
-
-    ASSERT_EQ((LogGroup)grp, reverse.group);
-    ASSERT_EQ((LogCategory)ctg, reverse.category);
+    ASSERT_EQ(grp, reverse.group);
+    ASSERT_EQ(ctg, reverse.category);
     ASSERT_EQ(sesstok, reverse.session_token);
     ASSERT_EQ(msg, reverse.message);
     g_variant_unref(revparse);

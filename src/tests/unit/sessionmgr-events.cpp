@@ -81,13 +81,11 @@ TEST(SessionManagerEvent, init_with_values)
 
 TEST(SessionManagerEvent, init_with_gvariant_valid)
 {
-    GVariantBuilder *b = g_variant_builder_new(G_VARIANT_TYPE("(oqu)"));
-    g_variant_builder_add(b, "o", "/net/openvpn/v3/test/4");
-    g_variant_builder_add(b, "q", 1);
-    g_variant_builder_add(b, "u", 567);
-    GVariant *data = g_variant_builder_end(b);
-    g_variant_builder_clear(b);
-    g_variant_builder_unref(b);
+    GVariantBuilder *b = glib2::Builder::Create("(oqu)");
+    glib2::Builder::Add<DBus::Object::Path>(b, "/net/openvpn/v3/test/4");
+    glib2::Builder::Add<uint16_t>(b, 1);
+    glib2::Builder::Add<uint32_t>(b, 567);
+    GVariant *data = glib2::Builder::Finish(b);
 
     Event ev(data);
     Event chk{"/net/openvpn/v3/test/4", EventType::SESS_CREATED, 567};
@@ -98,22 +96,20 @@ TEST(SessionManagerEvent, init_with_gvariant_valid)
 
 TEST(SessionManagerEvent, init_with_gvariant_invalid)
 {
-    GVariantBuilder *b = g_variant_builder_new(G_VARIANT_TYPE("(si)"));
-    g_variant_builder_add(b, "s", "/net/openvpn/v3/test/5");
-    g_variant_builder_add(b, "i", 5);
-    GVariant *data = g_variant_builder_end(b);
-    g_variant_builder_clear(b);
-    g_variant_builder_unref(b);
+    GVariantBuilder *b = glib2::Builder::Create("(si)");
+    glib2::Builder::Add<std::string>(b, "/net/openvpn/v3/test/5");
+    glib2::Builder::Add<int32_t>(b, 5);
+    GVariant *data = glib2::Builder::Finish(b);
+
     ASSERT_THROW(Event ev(data), SessionManager::Exception);
     g_variant_unref(data);
 
-    b = g_variant_builder_new(G_VARIANT_TYPE("(oqu)"));
-    g_variant_builder_add(b, "o", "/net/openvpn/v3/test/6");
-    g_variant_builder_add(b, "q", 6);
-    g_variant_builder_add(b, "u", 678);
-    data = g_variant_builder_end(b);
-    g_variant_builder_clear(b);
-    g_variant_builder_unref(b);
+    b = glib2::Builder::Create("(oqu)");
+    glib2::Builder::Add<DBus::Object::Path>(b, "/net/openvpn/v3/test/6");
+    glib2::Builder::Add<uint16_t>(b, 6);
+    glib2::Builder::Add<uint32_t>(b, 678);
+    data = glib2::Builder::Finish(b);
+
     ASSERT_THROW(Event ev(data), SessionManager::Exception);
     g_variant_unref(data);
 }
@@ -122,9 +118,7 @@ TEST(SessionManagerEvent, gvariant_get)
 {
     Event ev{"/net/openvpn/v3/test/7", EventType::SESS_DESTROYED, 789};
     GVariant *chk = ev.GetGVariant();
-    gchar *dmp = g_variant_print(chk, true);
-    std::string dump_check(dmp);
-    g_free(dmp);
+    std::string dump_check = glib2::Utils::DumpToString(chk);
     g_variant_unref(chk);
 
     std::string expect = "(objectpath '/net/openvpn/v3/test/7', uint16 2, uint32 789)";

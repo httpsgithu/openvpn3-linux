@@ -222,19 +222,19 @@ TEST(resolved_IPAddress, GetGVariant)
 {
     IPAddress correct_ipv4(TestData::Correct::ipv4_str);
     GVariant *ipv4 = correct_ipv4.GetGVariant();
-    EXPECT_STREQ(g_variant_get_type_string(ipv4), "(iay)");
-    char *buf = g_variant_print(ipv4, true);
-    EXPECT_STREQ(buf, "(2, [byte 0x0a, 0x0b, 0x0c, 0x0d])");
+    std::string ipv4_type = glib2::DataType::Extract(ipv4);
+    EXPECT_STREQ(ipv4_type.c_str(), "(iay)");
+    std::string buf = glib2::Utils::DumpToString(ipv4);
+    EXPECT_STREQ(buf.c_str(), "(2, [byte 0x0a, 0x0b, 0x0c, 0x0d])");
     g_variant_unref(ipv4);
-    g_free(buf);
 
     IPAddress correct_ipv6(TestData::Correct::ipv6_str);
     GVariant *ipv6 = correct_ipv6.GetGVariant();
-    EXPECT_STREQ(g_variant_get_type_string(ipv6), "(iay)");
-    buf = g_variant_print(ipv6, true);
-    EXPECT_STREQ(buf, "(10, [byte 0xfd, 0x15, 0x53, 0xb6, 0xde, 0xad, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02])");
+    std::string ipv6_type = glib2::DataType::Extract(ipv6);
+    EXPECT_STREQ(ipv6_type.c_str(), "(iay)");
+    buf = glib2::Utils::DumpToString(ipv6);
+    EXPECT_STREQ(buf.c_str(), "(10, [byte 0xfd, 0x15, 0x53, 0xb6, 0xde, 0xad, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02])");
     g_variant_unref(ipv6);
-    g_free(buf);
 }
 
 } // namespace unittest

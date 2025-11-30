@@ -93,12 +93,12 @@ TEST(StatusEvent, reset_2)
 
 TEST(StatusEvent, parse_gvariant_invalid_data)
 {
-    GVariant *data = nullptr;
-    data = g_variant_new("(uuss)",
-                         (guint)StatusMajor::CONFIG,
-                         (guint)StatusMinor::CFG_OK,
-                         "Test status",
-                         "Invalid data");
+    GVariantBuilder *params = glib2::Builder::Create("(uuss)");
+    glib2::Builder::Add(params, StatusMajor::CONFIG);
+    glib2::Builder::Add(params, StatusMinor::CFG_OK);
+    glib2::Builder::Add<std::string>(params, "Test status");
+    glib2::Builder::Add<std::string>(params, "Invalid data");
+    GVariant *data = glib2::Builder::Finish(params);
 
     ASSERT_THROW(Events::Status parsed(data),
                  DBus::Exception);
@@ -111,12 +111,11 @@ TEST(StatusEvent, parse_gvariant_invalid_data)
 
 TEST(StatusEvent, parse_gvariant_valid_dict)
 {
-    GVariantBuilder *b = g_variant_builder_new(G_VARIANT_TYPE("a{sv}"));
-    g_variant_builder_add(b, "{sv}", "major", g_variant_new_uint32((guint)StatusMajor::CONFIG));
-    g_variant_builder_add(b, "{sv}", "minor", g_variant_new_uint32((guint)StatusMinor::CFG_OK));
-    g_variant_builder_add(b, "{sv}", "status_message", g_variant_new_string("Test status"));
-    GVariant *data = g_variant_builder_end(b);
-    g_variant_builder_unref(b);
+    GVariantDict *dict = glib2::Dict::Create();
+    glib2::Dict::Add(dict, "major", StatusMajor::CONFIG);
+    glib2::Dict::Add(dict, "minor", StatusMinor::CFG_OK);
+    glib2::Dict::Add<std::string>(dict, "status_message", "Test status");
+    GVariant *data = glib2::Dict::Finish(dict);
 
     Events::Status parsed(data);
     ASSERT_EQ(parsed.major, StatusMajor::CONFIG);
@@ -128,15 +127,16 @@ TEST(StatusEvent, parse_gvariant_valid_dict)
 
 TEST(StatusEvent, parse_gvariant_valid_tuple)
 {
-    GVariant *data = g_variant_new("(uus)",
-                                   (guint)StatusMajor::CONFIG,
-                                   (guint)StatusMinor::CFG_REQUIRE_USER,
-                                   "Parse testing again");
+    GVariantBuilder *params = glib2::Builder::Create("(uus)");
+    glib2::Builder::Add(params, StatusMajor::CONFIG);
+    glib2::Builder::Add(params, StatusMinor::CFG_REQUIRE_USER);
+    glib2::Builder::Add<std::string>(params, "Parse testing again");
+    GVariant *data = glib2::Builder::Finish(params);
+
     Events::Status parsed(data);
     ASSERT_EQ(parsed.major, StatusMajor::CONFIG);
     ASSERT_EQ(parsed.minor, StatusMinor::CFG_REQUIRE_USER);
     ASSERT_EQ(parsed.message, "Parse testing again");
-
     g_variant_unref(data);
 }
 
@@ -145,17 +145,14 @@ TEST(StatusEvent, GetGVariantTuple)
 {
     Events::Status reverse(StatusMajor::CONNECTION, StatusMinor::CONN_INIT, "Yet another test");
     GVariant *revparse = reverse.GetGVariantTuple();
-    guint maj = 0;
-    guint min = 0;
-    gchar *msg_c = nullptr;
-    g_variant_get(revparse, "(uus)", &maj, &min, &msg_c);
-    std::string msg(msg_c);
-    g_free(msg_c);
 
-    ASSERT_EQ((StatusMajor)maj, reverse.major);
-    ASSERT_EQ((StatusMinor)min, reverse.minor);
+    auto maj = glib2::Value::Extract<StatusMajor>(revparse, 0);
+    auto min = glib2::Value::Extract<StatusMinor>(revparse, 1);
+    auto msg = glib2::Value::Extract<std::string>(revparse, 2);
+
+    ASSERT_EQ(maj, reverse.major);
+    ASSERT_EQ(min, reverse.minor);
     ASSERT_EQ(msg, reverse.message);
-
     g_variant_unref(revparse);
 }
 

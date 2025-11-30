@@ -83,8 +83,10 @@ TEST(AttentionReq, reset)
 
 TEST(AttentionReq, parse_gvariant_invalid_data)
 {
-    GVariant *data = nullptr;
-    data = g_variant_new("(uu)", 1, 2);
+    GVariantBuilder *params = glib2::Builder::Create("(uu)");
+    glib2::Builder::Add<uint32_t>(params, 1);
+    glib2::Builder::Add<uint32_t>(params, 2);
+    GVariant *data = glib2::Builder::Finish(params);
 
     EXPECT_THROW(Events::AttentionReq parsed(data),
                  DBus::Exception);
@@ -97,10 +99,11 @@ TEST(AttentionReq, parse_gvariant_invalid_data)
 
 TEST(AttentionReq, parse_gvariant_valid_tuple)
 {
-    GVariant *data = g_variant_new("(uus)",
-                                   static_cast<uint32_t>(ClientAttentionType::CREDENTIALS),
-                                   static_cast<uint32_t>(ClientAttentionGroup::USER_PASSWORD),
-                                   "Parse testing again");
+    GVariantBuilder *params = glib2::Builder::Create("(uus)");
+    glib2::Builder::Add(params, ClientAttentionType::CREDENTIALS);
+    glib2::Builder::Add(params, ClientAttentionGroup::USER_PASSWORD);
+    glib2::Builder::Add<std::string>(params, "Parse testing again");
+    GVariant *data = glib2::Builder::Finish(params);
     Events::AttentionReq parsed(data);
     EXPECT_EQ(parsed.type, ClientAttentionType::CREDENTIALS);
     EXPECT_EQ(parsed.group, ClientAttentionGroup::USER_PASSWORD);
