@@ -362,21 +362,16 @@ class Session : public DBusRequiresQueueProxy
     ConnectionStats GetConnectionStats()
     {
         GVariant *statsprops = proxy->GetPropertyGVariant(target, "statistics");
-        GVariantIter *stats_ar = nullptr;
-        g_variant_get(statsprops, "a{sx}", &stats_ar);
+        glib2::Utils::checkParams(__func__, statsprops, "a{sx}");
 
         ConnectionStats ret;
-        GVariant *r = nullptr;
-        while ((r = g_variant_iter_next_value(stats_ar)))
+        auto record_parser = [&ret](GVariant *record)
         {
-            gchar *key = nullptr;
-            gint64 val;
-            g_variant_get(r, "{sx}", &key, &val);
-            ret.emplace_back(std::string(key), val);
-            g_variant_unref(r);
-            g_free(key);
-        }
-        g_variant_iter_free(stats_ar);
+            auto key = glib2::Value::Extract<std::string>(record, 0);
+            auto value = glib2::Value::Extract<int64_t>(record, 1);
+            ret.emplace_back(key, value);
+        };
+        glib2::Value::IterateArray(statsprops, record_parser);
         g_variant_unref(statsprops);
 
         return ret;

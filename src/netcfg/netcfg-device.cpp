@@ -343,27 +343,9 @@ void NetCfgDevice::method_add_networks(GVariant *params)
      *  b  -  bool, exclude flag.  Route is to be excluded if true
      */
     glib2::Utils::checkParams(__func__, params, "(a(suibb))", 1);
-    GVariantIter *network_iter;
-    g_variant_get(params, "(a(suibb))", &network_iter);
 
-    GVariant *network_descr = nullptr;
-    while ((network_descr = g_variant_iter_next_value(network_iter)))
+    auto record_parser = [this](GVariant *network_descr)
     {
-        try
-        {
-            glib2::Utils::checkParams(__func__, network_descr, "(suibb)", 5);
-        }
-        catch (const DBus::Exception &excp)
-        {
-            char *data = g_variant_print(network_descr, true);
-            std::string err = fmt::format("{} - Data: {}",
-                                          excp.GetRawError(),
-                                          std::string(data));
-            free(data);
-            throw NetCfgException(err);
-        }
-
-        // FIXME: migrate into Network class
         auto netw_addr{filter_ctrl_chars(glib2::Value::Extract<std::string>(network_descr, 0), true)};
         auto prefix_size{glib2::Value::Extract<uint32_t>(network_descr, 1)};
         auto metric{glib2::Value::Extract<int32_t>(network_descr, 2)};
@@ -380,9 +362,9 @@ void NetCfgDevice::method_add_networks(GVariant *params)
             (ipv6 ? "yes" : "no")));
 
         networks.emplace_back(netw_addr, prefix_size, metric, ipv6, exclude);
-    }
-    // FIXME:  No need to unref GVariant *network ?
-    g_variant_iter_free(network_iter);
+
+    };
+    glib2::Value::IterateArray(params, record_parser);
 }
 
 

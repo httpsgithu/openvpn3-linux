@@ -30,27 +30,18 @@ NetCfgChangeEvent::NetCfgChangeEvent(GVariant *params)
                               + g_type);
     }
 
-    gchar *dev = nullptr;
-    GVariantIter *det = nullptr;
-    guint tmp_type = 0;
-    g_variant_get(params, "(usa{ss})", &tmp_type, &dev, &det);
-    type = (NetCfgChangeType)tmp_type;
+    type = glib2::Value::Extract<NetCfgChangeType>(params, 0);
+    device = glib2::Value::Extract<std::string>(params, 1);
+    GVariant *details_dict = glib2::Value::ExtractChild(params, 2);
 
-    device = std::string(dev);
-    g_free(dev);
     details.clear();
-
-    GVariant *kv = nullptr;
-    while ((kv = g_variant_iter_next_value(det)))
+    auto parse_details = [this](GVariant *record)
     {
-        gchar *key = nullptr;
-        gchar *val = nullptr;
-        g_variant_get(kv, "{ss}", &key, &val);
-        details[key] = std::string(val);
-        g_free(key);
-        g_free(val);
-    }
-    g_variant_iter_free(det);
+        auto key = glib2::Value::Extract<std::string>(record, 0);
+        auto value = glib2::Value::Extract<std::string>(record, 1);
+        details.insert({key, value});
+    };
+    glib2::Value::IterateArray(details_dict, parse_details);
 }
 
 

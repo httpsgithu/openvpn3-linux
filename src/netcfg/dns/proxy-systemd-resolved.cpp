@@ -229,18 +229,13 @@ std::vector<std::string> Link::GetDNSServers() const
     GVariant *r = proxy->GetPropertyGVariant(tgt_link, "DNS");
     glib2::Utils::checkParams(__func__, r, "a(iay)");
 
-
-    GVariantIter *it = g_variant_iter_new(r);
-
-    GVariant *rec = nullptr;
     std::vector<std::string> dns_srvs;
-    while ((rec = g_variant_iter_next_value(it)))
+    auto parse_record = [&dns_srvs](GVariant *rec)
     {
         IPAddress d(rec);
         dns_srvs.push_back(d.str());
-        g_variant_unref(rec);
-    }
-    g_variant_iter_free(it);
+    };
+    glib2::Value::IterateArray(r, parse_record);
     g_variant_unref(r);
 
     return dns_srvs;
@@ -295,16 +290,13 @@ SearchDomain::List Link::GetDomains() const
     GVariant *r = proxy->GetPropertyGVariant(tgt_link, "Domains");
     glib2::Utils::checkParams(__func__, r, "a(sb)");
 
-    GVariantIter *it = g_variant_iter_new(r);
     SearchDomain::List ret{};
-    GVariant *el = nullptr;
-    while ((el = g_variant_iter_next_value(it)))
+    auto parse_record = [&ret](GVariant *record)
     {
-        SearchDomain dom(el);
+        SearchDomain dom(record);
         ret.push_back(dom);
-        g_variant_unref(el);
-    }
-    g_variant_iter_free(it);
+    };
+    glib2::Value::IterateArray(r, parse_record);
     g_variant_unref(r);
 
     return ret;

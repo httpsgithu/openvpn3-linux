@@ -143,28 +143,22 @@ int test_gvariant()
 
 
     std::cout << "      manual parsing: ";
-    guint type = 0;
-    gchar *dev_s = nullptr;
-    GVariantIter *det_g = nullptr;
-    g_variant_get(chk, "(usa{ss})", &type, &dev_s, &det_g);
-    g_variant_unref(chk);
+
+    auto type = glib2::Value::Extract<uint32_t>(chk, 0);
+    auto dev_s = glib2::Value::Extract<std::string>(chk, 1);
+    GVariant *details = glib2::Value::ExtractChild(chk, 2);
 
     NetCfgChangeDetails det_s;
-    GVariant *kv = nullptr;
-    while ((kv = g_variant_iter_next_value(det_g)))
+    auto record_parser = [&det_s](GVariant *record)
     {
-        gchar *key = nullptr;
-        gchar *value = nullptr;
-        g_variant_get(kv, "{ss}", &key, &value);
-
-        det_s[key] = std::string(value);
-        g_free(key);
-        g_free(value);
-    }
-    g_variant_iter_free(det_g);
+        auto key = glib2::Value::Extract<std::string>(record, 0);
+        auto value = glib2::Value::Extract<std::string>(record, 1);
+        det_s[key] = value;
+    };
+    glib2::Value::IterateArray(details, record_parser);
 
     if ((guint)g_state.type != type
-        || 0 != (g_state.device.compare(dev_s))
+        || g_state.device != dev_s
         || g_state.details != det_s)
     {
         std::cout << "FAILED" << std::endl;
@@ -189,7 +183,6 @@ int test_gvariant()
     {
         std::cout << "PASSED" << std::endl;
     }
-    g_free(dev_s);
 
     std::cout << "-- Testing parsing GVariant data (valid data)... ";
     NetCfgChangeEvent parsed(g_state);

@@ -184,20 +184,18 @@ class DBusRequiresQueueProxy
     std::vector<RequiresQueue::ClientAttTypeGroup> QueueCheckTypeGroup()
     {
         GVariant *res = proxy->Call(target, method_quechktypegroup);
-        GVariantIter *ar_type_group = nullptr;
-        g_variant_get(res, "(a(uu))", &ar_type_group);
+        glib2::Utils::checkParams(__func__, res, "(a(uu))");
 
-        GVariant *e = NULL;
         std::vector<RequiresQueue::ClientAttTypeGroup> ret;
-        while ((e = g_variant_iter_next_value(ar_type_group)))
+        auto parser = [&ret](GVariant *element)
         {
-            auto t{glib2::Value::Extract<ClientAttentionType>(e, 0)};
-            auto g{glib2::Value::Extract<ClientAttentionGroup>(e, 1)};
+            auto t{glib2::Value::Extract<ClientAttentionType>(element, 0)};
+            auto g{glib2::Value::Extract<ClientAttentionGroup>(element, 1)};
             ret.push_back(std::make_tuple(t, g));
-            g_variant_unref(e);
-        }
+
+        };
+        glib2::Value::IterateArray(res, parser);
         g_variant_unref(res);
-        g_variant_iter_free(ar_type_group);
         return ret;
     }
 

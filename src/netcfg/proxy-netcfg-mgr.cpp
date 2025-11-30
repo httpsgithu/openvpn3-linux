@@ -269,20 +269,17 @@ NetCfgSubscriptions::NetCfgNotifSubscriptions Manager::NotificationSubscriberLis
         GVariant *res = proxy->Call(tgt_mgr, "NotificationSubscriberList");
         glib2::Utils::checkParams(__func__, res, "(a(su))");
 
-        GVariantIter *iter = nullptr;
-        g_variant_get(res, "(a(su))", &iter);
-
-        GVariant *val = nullptr;
         NetCfgSubscriptions::NetCfgNotifSubscriptions subscriptions;
-        while ((val = g_variant_iter_next_value(iter)))
+        auto record_parser = [&subscriptions](GVariant *record)
         {
-            auto busname = glib2::Value::Extract<std::string>(val, 0);
-            auto filter_mask = glib2::Value::Extract<uint32_t>(val, 1);
+            auto busname = glib2::Value::Extract<std::string>(record, 0);
+            auto filter_mask = glib2::Value::Extract<uint32_t>(record, 1);
 
             subscriptions.insert(NetCfgSubscriptions::NetCfgNotifSubscriptions::
                                      value_type(busname, filter_mask));
-        }
-        g_variant_iter_free(iter);
+
+        };
+        glib2::Value::IterateArray(res, record_parser);
         g_variant_unref(res);
         return subscriptions;
     }

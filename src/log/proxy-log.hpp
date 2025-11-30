@@ -526,23 +526,15 @@ class LogServiceProxy
         glib2::Utils::checkParams(__func__, l, "(a(ssss))", 1);
 
         LogSubscribers list;
-        GVariantIter *iter = nullptr;
-        g_variant_get(l, "(a(ssss))", &iter);
-
-        GVariant *val = nullptr;
-        while ((val = g_variant_iter_next_value(iter)))
+        auto parse_entries = [&list](GVariant *element)
         {
-            glib2::Utils::checkParams(__func__, val, "(ssss)", 4);
-            LogSubscriberEntry e(glib2::Value::Extract<std::string>(val, 0),
-                                 glib2::Value::Extract<std::string>(val, 1),
-                                 glib2::Value::Extract<std::string>(val, 2),
-                                 glib2::Value::Extract<DBus::Object::Path>(val, 3));
+            LogSubscriberEntry e(glib2::Value::Extract<std::string>(element, 0),
+                                 glib2::Value::Extract<std::string>(element, 1),
+                                 glib2::Value::Extract<std::string>(element, 2),
+                                 glib2::Value::Extract<DBus::Object::Path>(element, 3));
             list.push_back(e);
-            g_variant_unref(val);
-        }
-        g_variant_iter_free(iter);
-        g_variant_unref(l);
-
+        };
+        glib2::Value::IterateArray(l, parse_entries);
         std::sort(list.begin(), list.end(), logsubscribers_sort);
         return list;
     }
