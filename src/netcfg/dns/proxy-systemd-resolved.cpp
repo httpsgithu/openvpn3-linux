@@ -498,7 +498,7 @@ void Link::BackgroundCall(DBus::Proxy::TargetPreset::Ptr &target,
                       (target ? target->object_path : "[invalid target object]"),
                       (target ? target->interface : "[invalid target object]"),
                       method,
-                      (params ? g_variant_print(params, true) : "[NULL]"));
+                      glib2::Utils::DumpToString(params));
 
     if (!target)
     {
@@ -540,7 +540,7 @@ void Link::BackgroundCall(DBus::Proxy::TargetPreset::Ptr &target,
             target->object_path,
             target->interface,
             method,
-            g_variant_print(params, true)));
+            glib2::Utils::DumpToString(params)));
     }
 
     asio::post(
@@ -558,7 +558,7 @@ void Link::BackgroundCall(DBus::Proxy::TargetPreset::Ptr &target,
                                        bgdata->object_path,
                                        bgdata->interface,
                                        bgdata->method,
-                                       (bgdata->params ? g_variant_print(bgdata->params, true) : "[NULL]"));
+                                       glib2::Utils::DumpToString(bgdata->params));
 
                     //  If the proxy object is invalid, the Link object has been
                     //  or is being destructed.  Then we just bail out.
@@ -592,7 +592,7 @@ void Link::BackgroundCall(DBus::Proxy::TargetPreset::Ptr &target,
                                           bgdata->path,
                                           bgdata->interface,
                                           bgdata->method,
-                                          (bgdata->params ? g_variant_print(bgdata->params, true) : "[NULL]"));
+                                          glib2::Utils::DumpToString(bgdata->params));
 
                         // The proxy->Call(...) call might result in bgdata->params being released,
                         // even if an exception happens.  We increase the GVariant refcounter to

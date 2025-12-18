@@ -127,10 +127,8 @@ int test_gvariant()
                               {{"ip_address", "2001:db8:a050::1"}, {"prefix", "64"}});
     GVariant *chk = g_state.GetGVariant();
 
-    std::cout << "      g_variant_print() check: ";
-    gchar *dmp = g_variant_print(chk, true);
-    std::string dump_check(dmp);
-    g_free(dmp);
+    std::cout << "      glib2::Utils::DumpToString() check: ";
+    std::string dump_check = glib2::Utils::DumpToString(chk);
     if (dump_check != "(uint32 16, 'tun22', {'ip_address': '2001:db8:a050::1', 'prefix': '64'})")
     {
         std::cout << "FAILED: " << dump_check;
