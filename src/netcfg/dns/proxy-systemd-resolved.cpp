@@ -577,7 +577,7 @@ void Link::BackgroundCall(DBus::Proxy::TargetPreset::Ptr &target,
                 {
                     try
                     {
-                        if (!GDBusPP::Proxy::Utils::LookupObject(proxy, bgdata->object_path))
+                        if (!prxqry->LookupObject(bgdata->object_path))
                         {
                             sd_resolved_bg_log("[LAMBDA] target={}, interface={}, method={}, attempts={} - Object not found",
                                                bgdata->object_path,

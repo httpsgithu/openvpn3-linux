@@ -15,28 +15,5 @@
 
 #pragma once
 
-#include <gdbuspp/proxy.hpp>
-
-/**
- *  Support function for features lacking in GDBus++ v3 and older
- *
- *  This is a more lightweight approach to check if an object exists,
- *  through inspecting the Introspection data of the service.
- *
- *  Most of this code is taken from a newer GDBUs++ codebase and adopted
- *  to fit into OpenVPN 3 Linux.  For the current OpenVPN 3 Linux release,
- *  we do not want to upgrade the GDBus++ library.
- *
- *  FIXME:  Remove this function when upgrading to GDBus++ v4 or newer
- *
- * @param proxy   DBus::Proxy::Client to use for quering a D-Bus service
- * @param path    DBus::Object::Path of the object to check for
- * @return true if the object is found in the introspection data, otherwise false
- */
-
-
-namespace GDBusPP::Proxy::Utils {
-
-bool LookupObject(DBus::Proxy::Client::Ptr proxy, const DBus::Object::Path &path);
-
-}
+// Intentionally left blank
+//   - to make it easier to backport functions in the future
