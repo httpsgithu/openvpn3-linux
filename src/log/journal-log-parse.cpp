@@ -401,11 +401,6 @@ LogEntries Parse::Retrieve()
     sd_journal_add_match(journal, "SYSLOG_IDENTIFIER=net.openvpn.v3.log", 0);
     sd_journal_add_disjunction(journal);
 
-    // TODO: These two matches can be removed in v25
-    sd_journal_add_match(journal, "SYSLOG_IDENTIFIER=openvpn3-service-logger", 0);
-    sd_journal_add_disjunction(journal);
-    sd_journal_add_match(journal, "SYSLOG_IDENTIFIER=openvpn3-service-log-dev", 0);
-
     while (sd_journal_next(journal) > 0)
     {
         ret.push_back(LogEntry(journal));
