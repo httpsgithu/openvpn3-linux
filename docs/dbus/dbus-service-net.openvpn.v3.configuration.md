@@ -105,7 +105,7 @@ caller is granted access to which is owned by the specified user.
 
 This method transfers the ownership of a configuration profile  to the given
 UID value.  This feature is by design restricted to the root account only and
-is only expected to be used by `openvpn3-autoload` and similar tools.
+is only expected to be used by `openvpn3-systemd` and similar tools.
 
 This method is also placed in the main configuration manager object and not the
 configuration object itself by design, to emphasize this being a special case

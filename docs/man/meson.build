@@ -37,7 +37,6 @@ manpage_sources = [
     ['openvpn3-admin-netcfg-service.8.rst', mandir_8],
     ['openvpn3-admin-sessionmgr-service.8.rst', mandir_8],
     ['openvpn3-admin.8.rst', mandir_8],
-    ['openvpn3-autoload.8.rst', mandir_8],
     ['openvpn3-service-backendstart.8.rst.in', mandir_8],
     ['openvpn3-service-client.8.rst.in', mandir_8],
     ['openvpn3-service-configmgr.8.rst.in', mandir_8],

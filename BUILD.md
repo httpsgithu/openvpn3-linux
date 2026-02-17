@@ -72,7 +72,7 @@ The following dependencies are needed:
 
 * (optional) Python 3.6 or newer
 
-  If Python 3.6 or newer is found, the openvpn2, openvpn3-autoload utilities
+  If Python 3.6 or newer is found, the openvpn2, openvpn3-as utilities
   and the openvpn3 Python module will be built and installed.
 
 * (optional) Python docutils

@@ -19,14 +19,6 @@ if systemd_service_cfg.found()
      endif
 
      configure_file(
-          input: 'openvpn3-autoload.service.in',
-          output: 'openvpn3-autoload.service',
-          configuration: systemd_cfg,
-          install: true,
-          install_dir: systemd_system_unit_dir,
-     )
-
-     configure_file(
           input: 'openvpn3-session@.service.in',
           output: 'openvpn3-session@.service',
           configuration: systemd_cfg,

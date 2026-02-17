@@ -34,11 +34,3 @@ custom_target('openvpn3-as',
         install: true,
         install_dir: get_option('prefix') / get_option('bindir'),
 )
-
-custom_target('openvpn3-autoload',
-        input: 'openvpn3-autoload',
-        output: 'openvpn3-autoload',
-        command: [cp_prog, '@INPUT@', '@OUTPUT@'],
-        install: true,
-        install_dir: get_option('prefix') / get_option('sbindir'),
-)
