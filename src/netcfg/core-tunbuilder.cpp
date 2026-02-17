@@ -204,7 +204,6 @@ class CoreTunbuilderImpl : public CoreTunbuilder
             NetCfgChangeEvent chg_ev(NetCfgChangeType::IPADDR_ADDED,
                                      config.iface_name,
                                      {{"ip_address", ipaddr.address},
-                                      {"prefix", std::to_string(ipaddr.prefix_size)}, // TODO: Deprecated, remove in v28+
                                       {"prefix_size", std::to_string(ipaddr.prefix_size)},
                                       {"ip_version", (ipaddr.ipv6 ? "6" : "4")}});
             netCfgDevice.signals->NetworkChange(chg_ev);
@@ -242,7 +241,6 @@ class CoreTunbuilderImpl : public CoreTunbuilder
                                      config.iface_name,
                                      {{"ip_version", (net.ipv6 ? "6" : "4")},
                                       {"subnet", net.address},
-                                      {"prefix", std::to_string(net.prefix_size)}, // TODO: Deprecated, remove in v28+
                                       {"prefix_size", std::to_string(net.prefix_size)},
                                       {"gateway", (net.ipv6 ? local6.gateway : local4.gateway)}});
             netCfgDevice.signals->NetworkChange(chg_ev);
@@ -274,7 +272,6 @@ class CoreTunbuilderImpl : public CoreTunbuilder
                                      ncdev.get_device_name(),
                                      {{"ip_version", (net.ipv6 ? "6" : "4")},
                                       {"subnet", net.address},
-                                      {"prefix", std::to_string(net.prefix_size)}, // TODO: Deprecated, remove in v28+
                                       {"prefix_size", std::to_string(net.prefix_size)}});
             ncdev.signals->NetworkChange(chg_ev);
         }
@@ -285,7 +282,6 @@ class CoreTunbuilderImpl : public CoreTunbuilder
             NetCfgChangeEvent chg_ev(NetCfgChangeType::IPADDR_REMOVED,
                                      ncdev.get_device_name(),
                                      {{"ip_address", ipaddr.address},
-                                      {"prefix", std::to_string(ipaddr.prefix_size)}, // TODO: Deprecated, remove in v28+
                                       {"prefix_size", std::to_string(ipaddr.prefix_size)},
                                       {"ip_version", (ipaddr.ipv6 ? "6" : "4")}});
             ncdev.signals->NetworkChange(chg_ev);

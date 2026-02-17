@@ -82,16 +82,6 @@ TEST(NetCfgChangeEvent, reset)
 
 TEST(NetCfgChangeEvent, stringstream)
 {
-    // TODO: Simple compat-check - can be removed in v28+
-    NetCfgChangeEvent event(NetCfgChangeType::IPADDR_ADDED,
-                            "testdev",
-                            {{"ip_address", "2001:db8:a050::1"}, {"prefix", "64"}, {"prefix_size", "64"}});
-    std::stringstream chk;
-    chk << event;
-    std::string expect("Device testdev - IP Address Added: ip_address='2001:db8:a050::1', prefix='64', prefix_size='64'");
-
-    EXPECT_TRUE(chk.str() == expect);
-
     NetCfgChangeEvent event2(NetCfgChangeType::IPADDR_ADDED,
                              "testdev",
                              {{"ip_address", "2001:db8:a050::1"}, {"prefix_size", "64"}});
