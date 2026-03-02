@@ -403,7 +403,9 @@ void NetCfgServiceHandler::method_cleanup_process_resources(DBus::Object::Method
         for (const auto &it : object_manager->GetAllObjects())
         {
             NetCfgDevice::Ptr tundev = std::static_pointer_cast<NetCfgDevice>(it.second);
-            if (tundev->getCreatorPID() == pid)
+
+            // TODO: Could busname be used as the lookup key?
+            if (tundev && tundev->getCreatorPID() == pid)
             {
                 // The teardown method will also call to the erase method which will
                 // then be a noop but doing the erase here gets us a valid next iterator
