@@ -415,6 +415,12 @@ void NetCfgServiceHandler::method_cleanup_process_resources(DBus::Object::Method
         }
         openvpn::cleanup_protected_sockets(pid, signals);
     }
+    catch (const DBus::Proxy::Exception &excp)
+    {
+        signals->Debug(fmt::format("{} - DBus::Proxy error: {}",
+                                   __FUNCTION__,
+                                   excp.GetRawError()));
+    }
     catch (const DBus::Signals::Exception &excp)
     {
         fmt::print("{}:{} -- DBus::Signals::Exception: {}\n          D-Bus call details: {}\n",
@@ -422,5 +428,28 @@ void NetCfgServiceHandler::method_cleanup_process_resources(DBus::Object::Method
                    __LINE__,
                    excp.what(),
                    args);
+    }
+#ifdef DEBUG_EXCEPTIONS
+    catch (const DBus::Credentials::Exception &excp)
+    {
+        signals->Debug(fmt::format("{}:{} -- DBus::Credentials::Exception: {}\n          D-Bus call details: {}\n",
+                                   __FUNCTION__,
+                                   __LINE__,
+                                   excp.what(),
+                                   args));
+    }
+#else
+    catch (const DBus::Credentials::Exception &)
+    {
+        // We let these errors pass silently when not debugging exceptions.
+        // It just means we have no chance to trace back the caller PID
+        // any more.
+    }
+#endif
+    catch (const DBus::Exception &excp)
+    {
+        signals->Debug(fmt::format("{} - DBus error: {}",
+                                   __FUNCTION__,
+                                   excp.GetRawError()));
     }
 }
