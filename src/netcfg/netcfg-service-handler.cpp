@@ -202,10 +202,11 @@ const bool NetCfgServiceHandler::Authorize(const DBus::Authz::Request::Ptr authz
                 }
                 uid_t sub_owner = subscriptions->GetSubscriptionOwner(authzreq->caller);
                 sub_owner_valid = true;
-                signals->Debug("net.openvpn.v3.netcfg.NotificationUnsubscribe: "
-                               "owner_uid="
-                               + std::to_string(sub_owner)
-                               + ", caller_uid=" + std::to_string(caller_uid));
+                signals->Debug(
+                    fmt::format("net.openvpn.v3.netcfg.NotificationUnsubscribe: "
+                                "owner_uid={}, caller_uid={}",
+                                sub_owner,
+                                caller_uid));
                 return (caller_uid == 0) || (caller_uid == sub_owner);
             }
         }
@@ -218,21 +219,18 @@ const bool NetCfgServiceHandler::Authorize(const DBus::Authz::Request::Ptr authz
             }
             else if (!sub_owner_valid)
             {
-                failing_method = "GetSubscriotionOwner";
+                failing_method = "GetSubscriptionOwner";
             }
             else
             {
                 signals->LogError(
-                    fmt::format(FMT_COMPILE("Unexpected error authorizing {}: {}"),
+                    fmt::format("Unexpected error authorizing {}: {}",
                                 authzreq->caller,
                                 excp.GetRawError()));
                 return false;
             }
 
-            signals->LogError(fmt::format(
-                FMT_COMPILE("Failed to retrieve caller information, access rejected ({})"),
-                failing_method));
-            signals->Debug(fmt::format("{}('{}') call failed: {}",
+            signals->Debug(fmt::format("NetCfgServiceHandler::Authorize - {}('{}') call failed: {}",
                                        failing_method,
                                        authzreq->caller,
                                        excp.GetRawError()));
@@ -255,8 +253,7 @@ void NetCfgServiceHandler::method_create_virtual_interface(DBus::Object::Method:
         glib2::Value::Extract<std::string>(params, 0),
         true);
 
-    signals->Debug(std::string("CreateVirtualInterface(")
-                   + "'" + device_name + "')");
+    signals->Debug(fmt::format("CreateVirtualInterface('{}')", device_name));
 
     try
     {
@@ -264,10 +261,10 @@ void NetCfgServiceHandler::method_create_virtual_interface(DBus::Object::Method:
         uid_t sender_uid = creds_query->GetUID(sender);
         pid_t sender_pid = creds_query->GetPID(sender);
 
-        DBus::Object::Path dev_path = fmt::format(FMT_COMPILE("{}/{}_{}"),
-                                           Constants::GenPath("netcfg"),
-                                           sender_pid,
-                                           device_name);
+        DBus::Object::Path dev_path = fmt::format("{}/{}_{}",
+                                                  Constants::GenPath("netcfg"),
+                                                  sender_pid,
+                                                  device_name);
 
         NetCfgDevice::Ptr device = object_manager->CreateObject<NetCfgDevice>(
             conn,
@@ -282,12 +279,12 @@ void NetCfgServiceHandler::method_create_virtual_interface(DBus::Object::Method:
             signals->GetLogWriter(),
             options);
 
-        signals->LogInfo(fmt::format(
-            FMT_COMPILE("Virtual device '{}' registered on {} (owner uid {}, owner pid {})"),
-            device_name,
-            dev_path,
-            sender_uid,
-            sender_pid));
+        signals->LogInfo(
+            fmt::format("Virtual device '{}' registered on {} (owner uid {}, owner pid {})",
+                        device_name,
+                        dev_path,
+                        sender_uid,
+                        sender_pid));
         args->SetMethodReturn(glib2::Value::Create<DBus::Object::Path>(dev_path));
     }
     catch (const DBus::Exception &excp)
@@ -300,7 +297,6 @@ void NetCfgServiceHandler::method_create_virtual_interface(DBus::Object::Method:
                                          excp.GetRawError()));
         throw NetCfgException(user_error);
     }
-
 }
 
 
@@ -356,13 +352,15 @@ void NetCfgServiceHandler::method_protect_socket(DBus::Object::Method::Arguments
         tunif = dev->get_device_name();
     }
 
-    signals->LogInfo(std::string("Socket protect called for socket ")
-                     + std::to_string(fd)
-                     + ", remote: '" + remote
-                     + "', tun: '" + tunif
-                     + "', ipv6: " + (ipv6 ? "yes" : "no")
-                     + ", device_path=" + dev_path
-                     + ", device-object: " + (dev ? "valid" : "missing"));
+    signals->LogInfo(
+        fmt::format("Socket protect called for socket {}, remote: {}, "
+                    "tun: {}, ipv6: {}, device_path={}, device-object: {}",
+                    fd,
+                    remote,
+                    (tunif.empty() ? "(unkown)" : tunif),
+                    (ipv6 ? "yes" : "no"),
+                    dev_path,
+                    (dev ? "valid" : "missing")));
 
     CoreLog::Connect(signals);
     if (options.so_mark >= 0)
@@ -399,8 +397,7 @@ void NetCfgServiceHandler::method_cleanup_process_resources(DBus::Object::Method
     try
     {
         pid_t pid = creds_query->GetPID(args->GetCallerBusName());
-        signals->LogInfo(std::string("Cleaning up resources for PID ")
-                         + std::to_string(pid) + ".");
+        signals->LogInfo(fmt::format("Cleaning up resources for PID {}.", pid));
 
         // Just normal loop here, since we delete from the container while modifying it
         for (const auto &it : object_manager->GetAllObjects())
@@ -418,8 +415,10 @@ void NetCfgServiceHandler::method_cleanup_process_resources(DBus::Object::Method
     }
     catch (const DBus::Signals::Exception &excp)
     {
-        std::cerr << __FUNCTION__ << ":" << __LINE__
-                  << " -- DBus::Signals::Exception: " << excp.what() << std::endl
-                  << "          D-Bus call details:" << args << std::endl;
+        fmt::print("{}:{} -- DBus::Signals::Exception: {}\n          D-Bus call details: {}\n",
+                   __FUNCTION__,
+                   __LINE__,
+                   excp.what(),
+                   args);
     }
 }
