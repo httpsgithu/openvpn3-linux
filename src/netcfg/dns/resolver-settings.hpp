@@ -18,6 +18,7 @@
 #include <memory>
 #include <sstream>
 #include <vector>
+#include <fmt/ostream.h>
 
 #include "log/core-dbus-logger.hpp"
 #include <openvpn/client/dns.hpp>
@@ -463,3 +464,9 @@ class ResolverSettings
 };
 } // namespace DNS
 } // namespace NetCfg
+
+
+template <>
+struct fmt::formatter<NetCfg::DNS::ResolverSettings::Ptr> : ostream_formatter
+{
+};

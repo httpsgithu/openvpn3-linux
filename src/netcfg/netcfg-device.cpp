@@ -362,7 +362,6 @@ void NetCfgDevice::method_add_networks(GVariant *params)
             (ipv6 ? "yes" : "no")));
 
         networks.emplace_back(netw_addr, prefix_size, metric, ipv6, exclude);
-
     };
     glib2::Value::IterateArray(params, record_parser);
 }
@@ -535,11 +534,9 @@ void NetCfgDevice::method_establish(DBus::Object::Method::Arguments::Ptr args)
                 resolver->ApplySettings(signals);
             }
 
-            std::stringstream details;
-            details << dnsconfig;
             signals->DebugDevice(device_name,
-                                 "Activating DNS/resolver settings: "
-                                     + details.str());
+                                 fmt::format("Activating DNS/resolver settings: {}",
+                                             dnsconfig));
             modified = false;
         }
     }
@@ -576,12 +573,9 @@ void NetCfgDevice::method_disable()
 {
     if (resolver && dnsconfig)
     {
-        std::stringstream details;
-        details << dnsconfig;
-
         signals->DebugDevice(device_name,
-                             "Disabling DNS/resolver settings: "
-                                 + details.str());
+                             fmt::format("Disabling DNS/resolver settings: {}",
+                                         dnsconfig));
 
         dnsconfig->Disable();
         resolver->ApplySettings(signals);
@@ -607,12 +601,9 @@ void NetCfgDevice::destroy()
     {
         if (resolver && dnsconfig)
         {
-            std::stringstream details;
-            details << dnsconfig;
-
             signals->DebugDevice(device_name,
-                                 "Removing DNS/resolver settings: "
-                                     + details.str());
+                                 fmt::format("Removing DNS/resolver settings: ",
+                                             dnsconfig));
             dnsconfig->PrepareRemoval();
             resolver->ApplySettings(signals);
             modified = false;
@@ -640,8 +631,7 @@ void NetCfgDevice::destroy()
         signals->LogError(fmt::format("Failed to destroy interface '{}'", device_name));
         signals->DebugDevice(
             device_name,
-            fmt::format("[destroy()] Error destroying device: {}", excp.GetRawError())
-        );
+            fmt::format("[destroy()] Error destroying device: {}", excp.GetRawError()));
     }
     catch (const std::exception &excp)
     {
@@ -670,7 +660,8 @@ void NetCfgDevice::method_destroy(DBus::Object::Method::Arguments::Ptr args)
         signals->DebugDevice(
             device_name,
             fmt::format("[method_destroy] {} Error retrieving D-Bus caller: {}",
-                        sender_name, excp.GetRawError()));
+                        sender_name,
+                        excp.GetRawError()));
     }
 
 
