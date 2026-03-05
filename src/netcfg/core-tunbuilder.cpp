@@ -389,8 +389,8 @@ void protect_socket_binddev(int fd, const std::string &remote, bool ipv6)
 
 
 
-CoreTunbuilder *getCoreBuilderInstance(NetCfgSignals::Ptr signals)
+openvpn::RCPtr<CoreTunbuilder> getCoreBuilderInstance(NetCfgSignals::Ptr signals)
 {
-    return new CoreTunbuilderImpl(std::move(signals));
+    return openvpn::RCPtr<CoreTunbuilder>(new CoreTunbuilderImpl(std::move(signals)));
 }
 } // namespace openvpn

@@ -78,6 +78,6 @@ void cleanup_protected_sockets(pid_t pid, NetCfgSignals::Ptr signals);
 
 
 // Workaround to avoid circular dependencies
-CoreTunbuilder *getCoreBuilderInstance(NetCfgSignals::Ptr signals);
+openvpn::RCPtr<CoreTunbuilder> getCoreBuilderInstance(NetCfgSignals::Ptr signals);
 
 } // namespace openvpn
