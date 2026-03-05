@@ -502,7 +502,7 @@ void NetCfgDevice::method_establish(DBus::Object::Method::Arguments::Ptr args)
 
     if (!tunimpl)
     {
-        tunimpl.reset(getCoreBuilderInstance());
+        tunimpl.reset(getCoreBuilderInstance(signals));
     }
 
     int fd = -1;

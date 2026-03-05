@@ -87,8 +87,6 @@ class CoreTunbuilderImpl : public CoreTunbuilder
      */
     TunBuilderCapture::Ptr createTunbuilderCapture(const NetCfgDevice &netCfgDevice)
     {
-        CoreLog::Connect(netCfgDevice.signals);
-
         TunBuilderCapture::Ptr tbc;
         tbc.reset(new TunBuilderCapture);
         tbc->tun_builder_new();
@@ -149,6 +147,12 @@ class CoreTunbuilderImpl : public CoreTunbuilder
 
 
   public:
+    CoreTunbuilderImpl(NetCfgSignals::Ptr signals)
+    {
+        CoreLog::Connect(signals);
+    }
+
+
     int establish(NetCfgDevice &netCfgDevice) override
     {
         TUN_CLASS_SETUP::Config config;
@@ -385,8 +389,8 @@ void protect_socket_binddev(int fd, const std::string &remote, bool ipv6)
 
 
 
-CoreTunbuilder *getCoreBuilderInstance()
+CoreTunbuilder *getCoreBuilderInstance(NetCfgSignals::Ptr signals)
 {
-    return new CoreTunbuilderImpl();
+    return new CoreTunbuilderImpl(std::move(signals));
 }
 } // namespace openvpn
