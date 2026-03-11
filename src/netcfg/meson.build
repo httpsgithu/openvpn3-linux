@@ -10,6 +10,7 @@ bin_backend_netcfg = executable(
     [
         'openvpn3-service-netcfg.cpp',
         'core-tunbuilder.cpp',
+        'cached-net-config.cpp',
         'netcfg-dco.cpp',
         'netcfg-device.cpp',
         'netcfg-service.cpp',

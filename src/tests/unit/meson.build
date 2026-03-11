@@ -17,6 +17,7 @@ unit_tests = executable(
            'unit-tests',
            [
                 'attention-req.cpp',
+                'cached-net-config-tests.cpp',
                 'configfileparser.cpp',
                 'core-extensions.cpp',
                 'dns-resolver-settings.cpp',
@@ -35,6 +36,7 @@ unit_tests = executable(
                 'timestamp.cpp',
                 '../../netcfg/dns/resolver-settings.cpp',
                 '../../netcfg/dns/settings-manager.cpp',
+                '../../netcfg/cached-net-config.cpp',
            ],
            include_directories: [include_dirs, gtest_inc, '../../..'],
            link_with: [
