@@ -29,6 +29,7 @@ class LogSender : public DBus::Signals::Group,
   public:
     using Ptr = std::shared_ptr<LogSender>;
 
+    LogSender(LogWriter *lgwr = nullptr);
     LogSender(DBus::Connection::Ptr dbuscon,
               const LogGroup lgroup,
               const std::string &objpath,
@@ -51,6 +52,7 @@ class LogSender : public DBus::Signals::Group,
     virtual void LogFATAL(const std::string &msg);
     Events::Log GetLastLogEvent() const;
 
+    std::vector<Events::Log> GetLogBuffer();
     LogWriter *GetLogWriter();
 
 
@@ -60,5 +62,7 @@ class LogSender : public DBus::Signals::Group,
 
 
   private:
+    bool dbus_enabled;
     Events::Log last_logevent;
+    std::vector<Events::Log> log_buffer; //< Only used when dbus_enabled == false
 };
