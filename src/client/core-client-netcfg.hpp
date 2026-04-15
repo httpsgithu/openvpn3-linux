@@ -339,9 +339,7 @@ class NetCfgTunBuilder : public T
 
         try
         {
-            virtual_interface_fd_ = device->Establish();
-            signals->Debug(fmt::format("Opened new virtual interface fd {}", virtual_interface_fd_));
-            return virtual_interface_fd_;
+            return device->Establish();
         }
         catch (const DBus::Exception &excp)
         {
@@ -372,7 +370,6 @@ class NetCfgTunBuilder : public T
         if (!device)
         {
             signals->Debug("tun_builder_teardown, no device available");
-            close_virtual_intf_fd_();
             return;
         }
 
@@ -386,7 +383,6 @@ class NetCfgTunBuilder : public T
             {
                 signals->Debug("tun_builder_teardown, disconnect requested -> destroying virtual device");
                 device->Destroy();
-                close_virtual_intf_fd_();
             }
             catch (const DBus::Exception &excp)
             {
@@ -406,25 +402,6 @@ class NetCfgTunBuilder : public T
             {
                 signals->LogCritical(excp.GetRawError());
             }
-        }
-    }
-
-
-    /**
-     *   Helper method to clean up the file descriptor used for the
-     *   virtual tun interface
-     *
-     *   The file descriptor in use, is preserved in the virtual_interface_fd_
-     *   class member, thus this method does not require any arguments nor
-     *   return any thing.
-     */
-    void close_virtual_intf_fd_()
-    {
-        if (virtual_interface_fd_ > 0)
-        {
-            signals->Debug(fmt::format("Closing virtial interface fd {}", virtual_interface_fd_));
-            close(virtual_interface_fd_);
-            virtual_interface_fd_ = -1;
         }
     }
 
@@ -678,5 +655,4 @@ class NetCfgTunBuilder : public T
     NetCfgProxy::Manager::Ptr netcfgmgr = nullptr;
     std::string session_token;
     std::string session_name;
-    int virtual_interface_fd_ = -1;
 };
