@@ -508,6 +508,7 @@ executable('profilemerge-optionlist',
     ],
     dependencies: [
         dep_jsoncpp,
+	dep_libfmt,
     ],
     include_directories: [include_dirs, '../..'],
 )
@@ -522,6 +523,7 @@ executable('config-export-json-test',
     ],
     dependencies: [
         dep_jsoncpp,
+        dep_libfmt,
     ],
     include_directories: [include_dirs, '../..'],
 )
@@ -536,6 +538,7 @@ executable('json-config-import-test',
     ],
     dependencies: [
         dep_jsoncpp,
+        dep_libfmt,
     ],
     include_directories: [include_dirs, '../..'],
 )

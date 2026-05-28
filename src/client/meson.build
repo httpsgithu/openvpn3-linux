@@ -13,6 +13,9 @@ libcore_epoch = static_library(
     [
         '../../openvpn3-core/openvpn/crypto/data_epoch.cpp',
     ],
+    dependencies: [
+        dep_libfmt,
+    ],
     include_directories: [include_dirs, '../..'],
     cpp_args: ['-DUSE_OPENSSL', '-DUSE_ASIO'],
 )
