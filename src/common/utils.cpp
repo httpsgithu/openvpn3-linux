@@ -27,6 +27,7 @@
 #include "build-version.h"
 #include "utils.hpp"
 
+#include <asio/version.hpp>
 #include <openvpn/legal/copyright.hpp>
 #include <openvpn/common/platform_string.hpp>
 
@@ -108,14 +109,15 @@ std::string get_program_version(const std::string &component)
     ver << " (" << simple_basename(component) << ")"
         << std::endl;
 
+    ver << "ASIO version: " << ASIO_VERSION / 100000 << '.' << ASIO_VERSION / 100 % 1000 << '.' << ASIO_VERSION % 100 << '\n';
 #if defined(OPENVPN_TUN_BUILDER_BASE_H)
     ver << ClientAPI::OpenVPNClient::platform() << std::endl;
 #else
     ver << openvpn::platform_string();
-#if defined(OPENVPN_DEBUG)
 #if defined(ENABLE_OVPNDCO)
     ver << " [DCO]";
 #endif
+#if defined(OPENVPN_DEBUG)
     ver << " built on " __DATE__ " " __TIME__;
 #endif // OPENVPN_DEBUG
 #endif // OPENVPN_TUN_BUILDER_BASE_H
