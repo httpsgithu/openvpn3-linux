@@ -58,7 +58,7 @@ class DCO
     int GetPipeFD();
 
     /**
-     * @brief Creates a new peer in ovpn-dco kernel module.
+     * @brief Creates a new peer in ovpn kernel module.
      *
      * @param peer_id      ID of the peer to create
      * @param transport_fd fd of transport socket, provided by client
@@ -110,7 +110,7 @@ class DCO
 
     /**
      * @brief Requests the current statistics of a peer from the
-     *        ovpn-dco kernel module.
+     *        ovpn kernel module.
      *
      * This only triggers the query; the kernel reply is delivered
      * asynchronously over the DCO pipe and parsed by the client side.
@@ -341,7 +341,7 @@ class Device
 
 #ifdef ENABLE_OVPNDCO
     /**
-     * Enables DCO functionality. This requires ovpn-dco kernel module.
+     * Enables DCO functionality. This requires ovpn kernel module.
      *
      * @param dev_name name of net device to create
      * @return DCO* DCO proxy object

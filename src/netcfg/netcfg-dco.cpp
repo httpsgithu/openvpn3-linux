@@ -114,9 +114,9 @@ NetCfgDCO::NetCfgDCO(DBus::Connection::Ptr dbuscon,
     socketpair(AF_UNIX, SOCK_DGRAM, 0, fds);
 
     std::ostringstream os;
-    if (TunNetlink::iface_new(os, dev_name, "ovpn-dco") != 0)
+    if (TunNetlink::iface_new(os, dev_name, "ovpn") != 0)
     {
-        throw NetCfgException("Error creating ovpn-dco device: " + os.str());
+        throw NetCfgException("Error creating ovpn device: " + os.str());
     }
 
     async_dco_worker_thread = std::async(

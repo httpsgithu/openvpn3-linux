@@ -66,8 +66,8 @@ OPTIONS
                 user space.
 
                 This option is only available if openvpn3-linux has been built
-                with this support.  It will also require the `ovpn-dco-v2` kernel
-		module to be available.
+                with this support.  It will also require the `ovpn` kernel
+                module to be available.
 
 
 SEE ALSO

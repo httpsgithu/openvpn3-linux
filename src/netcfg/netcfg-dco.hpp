@@ -55,7 +55,7 @@ class NetCfgDCO : public DBus::Object::Base
     /**
      * Checks for availability of data channel offload kernel module
      *
-     * @return bool indicating whether the ovpn-dco kernel module is available
+     * @return bool indicating whether the ovpn kernel module is available
      */
     static bool available();
 
@@ -69,7 +69,7 @@ class NetCfgDCO : public DBus::Object::Base
 
 
     /**
-     * Deletes ovpn-dco net dev, stops ASIO event loop and GeNL and
+     * Deletes ovpn net dev, stops ASIO event loop and GeNL and
      * waits for worker thread to exit.
      */
     void teardown();

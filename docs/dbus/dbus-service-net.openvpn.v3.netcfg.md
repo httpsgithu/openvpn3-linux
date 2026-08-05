@@ -485,7 +485,7 @@ interface net.openvpn.v3.netcfg {
 
 ### Method: `net.openvpn.v3.netcfg.NewPeer`
 
-Creates a new peer in the ovpn-dco kernel module. The client is expected to
+Creates a new peer in the ovpn kernel module. The client is expected to
 create a socket, establish the connection and pass the remote end-point along
 with additional properties to this method.
 
@@ -502,12 +502,12 @@ with additional properties to this method.
 ### Method: `net.openvpn.v3.netcfg.GetPipeFD`
 
 Returns file descriptor used for bidirection generic netlink-based communication
-with ovpn-dco kernel module
+with ovpn kernel module
 
 #### Arguments
 | Direction | Name         | Type              | Description                                                        |
 |-----------|--------------|-------------------|--------------------------------------------------------------------|
-| Out       |              | fdlist            | The file descriptor for bidirectional communication to ovpn-dco [1]|
+| Out       |              | fdlist            | The file descriptor for bidirectional communication to ovpn [1]    |
 
 
 ### Method: `net.openvpn.v3.netcfg.NewKey`
@@ -526,7 +526,7 @@ specification.
 ### Method: `net.openvpn.v3.netcfg.SwapKeys`
 
 Swaps the primary and secondary encryption keys used by the data channel for the
-tunnelled network traffic. This call triggers instructs ovpn-dco to perform this
+tunnelled network traffic. This call triggers instructs ovpn to perform this
 swap in kernel memory. This is used to rotate and add new symmetric encryption
 keys during the lifetime of a VPN session. See the OpenVPN documentation related
 to key renegotiation options for more details.
@@ -539,7 +539,7 @@ to key renegotiation options for more details.
 
 ### Method: `net.openvpn.v3.netcfg.SetPeer`
 
-Set peer properties in the ovpn-dco kernel module.
+Set peer properties in the ovpn kernel module.
 
 #### Arguments
 | Direction | Name                | Type         | Description                                                              |

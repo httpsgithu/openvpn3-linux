@@ -47,7 +47,7 @@ files_type(openvpn3_netcfg_var_lib_t)
 allow openvpn3_netcfg_t self:capability { setgid setuid setpcap net_admin dac_override dac_read_search };
 allow openvpn3_netcfg_t self:process setcap;
 
-# Allow openvpn3-service-netcfg to load tun/ovpn-dco kernel modules,
+# Allow openvpn3-service-netcfg to load tun/ovpn kernel modules,
 # create and manage tun based devices
 kernel_request_load_module(openvpn3_netcfg_t)
 corenet_rw_tun_tap_dev(openvpn3_netcfg_t)
@@ -62,14 +62,14 @@ allow system_dbusd_t openvpn3_netcfg_t:unix_dgram_socket { read write };
 
 # Allow openvpn3-service-netcfg to create sockets which can be passed back to
 # openvpn3-service-client.  Unix sockets and fifo files are used for establishing
-# a communication channel between ovpn-dco interface and openvpn3-service-client
+# a communication channel between ovpn interface and openvpn3-service-client
 allow openvpn3_netcfg_t self:tun_socket create;
 allow openvpn3_netcfg_t self:unix_dgram_socket { create_socket_perms sendto };
 allow openvpn3_netcfg_t self:unix_stream_socket create_stream_socket_perms;
 rw_fifo_files_pattern(openvpn3_netcfg_t, self, self)
 
 # Allow openvpn3-service-netcfg to operate on sockets created by
-# openvpn3-service-client. This is needed for ovpn-dco interfaces, as the
+# openvpn3-service-client. This is needed for ovpn interfaces, as the
 # TCP/UDP socket create by openvpn3-service-client is passed to the kernel
 # module via openvpn3-service-netcfg.
 allow openvpn3_netcfg_t openvpn3_client_t:udp_socket rw_socket_perms;
@@ -114,7 +114,7 @@ allow openvpn3_client_t self:capability { setgid setuid };
 can_exec(openvpn3_client_t, openvpn3_client_exec_t)
 
 # Allow openvpn3-service-client to use sockets created by
-# openvpn3-service-netcfg - used for ovpn-dco kernel module communication
+# openvpn3-service-netcfg - used for ovpn kernel module communication
 allow openvpn3_client_t openvpn3_netcfg_t:unix_dgram_socket { read write };
 rw_fifo_files_pattern(openvpn3_client_t, self, self)
 

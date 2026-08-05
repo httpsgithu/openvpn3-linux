@@ -198,22 +198,13 @@ man page and [OpenVPN 3 D-Bus overview](docs/dbus/dbus-overview.md).
 ####  Kernel based Data Channel Offload (DCO) support
 
 The Data Channel Offload support moves the processing of the OpenVPN data
-channel operations from the client process to the kernel, via the ovpn-dco-v2
+channel operations from the client process to the kernel, via the ovpn
 kernel module.  This means the encryption and decryption of the tunnelled
 network traffic is kept entirely in kernel space instead of being send
 back and forth between the kernel and the OpenVPN client process.  This
 has the potential to improve the overall VPN throughput.  This module must
-be installed before OpenVPN 3 Linux can make use of this feature.  This is
-shipped in the OpenVPN 3 Linux package repositories or can be built from
-the [source code](https://gitlab.com/openvpn/ovpn-dco/).
+be installed before OpenVPN 3 Linux can make use of this feature.
 
-The ovpn-dco kernel module currently only support ***Linux kernel 5.4***
-and newer.  Currently supported distributions with DCO support:
-
- * Debian 11 and newer
- * Fedora 38 and newer
- * Red Hat Enterprise Linux 8 and newer
- * Ubuntu 20.04 and newer
 
 #### SELinux support
 

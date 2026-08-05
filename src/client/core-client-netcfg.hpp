@@ -117,7 +117,7 @@ class NetCfgTunBuilder : public T
         if (dco)
         {
             // A DCO session is already active. Re-creating the virtual
-            // device here would tear down the ovpn-dco interface together
+            // device here would tear down the ovpn interface together
             // with its peer and encryption keys, which must survive a mere
             // reconfiguration such as a PUSH_UPDATE. Keep the device and only
             // drop the addresses/routes captured during the previous setup so

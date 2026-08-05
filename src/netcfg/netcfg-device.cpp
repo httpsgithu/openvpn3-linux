@@ -398,7 +398,7 @@ void NetCfgDevice::method_clear_config()
     // first add the new config and then run the previous round's removal
     // commands, deleting the addresses/routes shared between the old and new
     // configuration -- leaving the interface unconfigured (see
-    // CoreTunbuilderImpl::establish()).  The ovpn-dco device, its peer and
+    // CoreTunbuilderImpl::establish()).  The ovpn device, its peer and
     // its encryption keys are managed by NetCfgDCO and survive this reset.
     if (tunimpl)
     {

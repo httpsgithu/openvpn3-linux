@@ -72,9 +72,9 @@ OPTIONS
                         handled inside the kernel instead of begin passed via
                         the OpenVPN client process in user space.
 
-			This option is only available if openvpn3-linux has been
-			built with this support.  It will also require the
-			`ovpn-dco-v2` kernel module to be available.
+                        This option is only available if openvpn3-linux has been
+                        built with this support.  It will also require the
+                        `ovpn` kernel module to be available.
 
 --server-override HOST
                         Override the remote server hostname/IP address to
