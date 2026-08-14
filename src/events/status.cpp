@@ -134,6 +134,48 @@ GVariant *Status::GetGVariantDict() const
 }
 
 
+std::string Status::str() const
+{
+    if ((StatusMajor::UNSET == major)
+        && (StatusMinor::UNSET == minor)
+        && message.empty())
+    {
+        return "(No status)";
+    }
+
+    std::string status_num;
+    std::string status_str;
+
+    status_num = "[";
+    if (print_mode & Status::PrintMode::MAJOR)
+    {
+        status_num += fmt::format(FMT_COMPILE("{}"), static_cast<uint8_t>(major));
+        status_str += StatusMajor_str[static_cast<uint8_t>(major)];
+    }
+    if (print_mode == Status::PrintMode::ALL)
+    {
+        status_num += ",";
+        status_str += ", ";
+    }
+    if (print_mode & Status::PrintMode::MINOR)
+    {
+        status_num += fmt::format(FMT_COMPILE("{}"), static_cast<uint8_t>(minor));
+        status_str += StatusMinor_str[static_cast<uint8_t>(minor)];
+    }
+    status_num += "] ";
+
+    return fmt::format(
+        FMT_COMPILE("{}{}{}{}"),
+        (show_numeric_status ? status_num : ""),
+        status_str,
+        (print_mode != Status::PrintMode::NONE
+                 && !message.empty()
+             ? ": "
+             : ""),
+        (!message.empty() ? message : ""));
+}
+
+
 bool Status::operator==(const Status &compare) const
 {
     return ((compare.major == (const StatusMajor)major)
@@ -173,3 +215,9 @@ bool Status::check_print_mode(Status::PrintMode mode) const
 
 
 } // namespace Events
+
+
+bool operator&(Events::Status::PrintMode a, Events::Status::PrintMode b)
+{
+    return (static_cast<uint8_t>(a) & static_cast<uint8_t>(b)) != 0;
+}

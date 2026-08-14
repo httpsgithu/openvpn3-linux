@@ -36,9 +36,9 @@ struct Status
     enum class PrintMode : uint8_t
     {
         NONE = 0,
-        MAJOR = 1,
-        MINOR = 2,
-        ALL = 3
+        MAJOR = 1 << 0,     // value: 1
+        MINOR = 1 << 1,     // value: 2
+        ALL = MAJOR | MINOR // value: 3
     };
 
     StatusMajor major;
@@ -119,6 +119,15 @@ struct Status
      */
     GVariant *GetGVariantDict() const;
 
+
+    /**
+     *  Generate a string representation of the current Events::Status object
+     *
+     * @return std::string
+     */
+    std::string str() const;
+
+
     /**
      *  Makes it possible to write StatusEvent in a readable format
      *  via iostreams, such as 'std::cout << status', where status is a
@@ -132,43 +141,7 @@ struct Status
      */
     friend std::ostream &operator<<(std::ostream &os, const Status &s)
     {
-        if ((StatusMajor::UNSET == s.major)
-            && (StatusMinor::UNSET == s.minor)
-            && s.message.empty())
-        {
-            return os << "(No status)";
-        }
-
-        std::string status_num;
-        std::string status_str;
-
-        status_num = "[";
-        if (s.print_mode & static_cast<uint8_t>(Status::PrintMode::MAJOR))
-        {
-            status_num += fmt::format(FMT_COMPILE("{}"), static_cast<unsigned>(s.major));
-            status_str += StatusMajor_str[static_cast<unsigned>(s.major)];
-        }
-        if (s.print_mode == static_cast<uint8_t>(Status::PrintMode::ALL))
-        {
-            status_num += ",";
-            status_str += ", ";
-        }
-        if (s.print_mode & static_cast<uint8_t>(Status::PrintMode::MINOR))
-        {
-            status_num += fmt::format(FMT_COMPILE("{}"), static_cast<unsigned>(s.minor));
-            status_str += StatusMinor_str[static_cast<unsigned>(s.minor)];
-        }
-        status_num += "] ";
-
-        return os << fmt::format(
-                   FMT_COMPILE("{}{}{}{}"),
-                   (s.show_numeric_status ? status_num : ""),
-                   status_str,
-                   (s.print_mode != static_cast<uint8_t>(Status::PrintMode::NONE)
-                            && !s.message.empty()
-                        ? ": "
-                        : ""),
-                   (!s.message.empty() ? s.message : ""));
+        return os << s.str();
     }
 
 
@@ -191,6 +164,9 @@ struct Status
 };
 
 } // namespace Events
+
+bool operator&(Events::Status::PrintMode a, Events::Status::PrintMode b);
+
 
 /**
  *  libfmt / fmt::format support, wrapping
