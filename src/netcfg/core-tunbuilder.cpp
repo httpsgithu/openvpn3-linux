@@ -34,6 +34,7 @@
 #include <openvpn/tun/linux/client/sitnl.hpp>
 #include <openvpn/tun/linux/client/tuncli.hpp>
 
+#include "cached-net-config.hpp"
 #include "common/utils.hpp"
 #include "netcfg-device.hpp"
 #include "netcfg-signals.hpp"
@@ -49,6 +50,7 @@ class CoreTunbuilderImpl : public CoreTunbuilder
 {
     TunLinuxSetup::Setup<TUN_LINUX>::Ptr tun;
     ActionList::Ptr remove_cmds;
+    CachedNetworkConfig::Ptr network_cfg;
 
     /**
      * Uses Tunbuilder to open a new tun device
@@ -167,6 +169,9 @@ class CoreTunbuilderImpl : public CoreTunbuilder
             config.iface_name = netCfgDevice.device_name;
         }
 #endif
+        // Create a new cached network configuration.  This invalidates any existing cache.
+        network_cfg = CachedNetworkConfig::Create();
+        network_cfg->AddRemote(netCfgDevice.device_name, netCfgDevice.remote.address);
 
         TunBuilderCapture::Ptr tbc = createTunbuilderCapture(netCfgDevice);
 
@@ -203,16 +208,6 @@ class CoreTunbuilderImpl : public CoreTunbuilder
                                  {});
         netCfgDevice.signals->NetworkChange(dev_ev);
 
-        for (const auto &ipaddr : netCfgDevice.vpnips)
-        {
-            NetCfgChangeEvent chg_ev(NetCfgChangeType::IPADDR_ADDED,
-                                     config.iface_name,
-                                     {{"ip_address", ipaddr.address},
-                                      {"prefix_size", std::to_string(ipaddr.prefix_size)},
-                                      {"ip_version", (ipaddr.ipv6 ? "6" : "4")}});
-            netCfgDevice.signals->NetworkChange(chg_ev);
-        }
-
         // WARNING:  This is NOT optimal
         //           - but should work for most use cases
         //
@@ -235,19 +230,36 @@ class CoreTunbuilderImpl : public CoreTunbuilder
             }
         }
 
+        for (const auto &ipaddr : netCfgDevice.vpnips)
+        {
+            auto details = network_cfg->AddVPNaddress(ipaddr, local4.address, local6.address);
+            NetCfgChangeEvent chg_ev(NetCfgChangeType::IPADDR_ADDED, config.iface_name, details);
+            netCfgDevice.signals->NetworkChange(chg_ev);
+        }
+
         // Announce routes related to this new interface
         for (const auto &net : netCfgDevice.networks)
         {
+            auto details = network_cfg->AddVPNroute(net, local4.gateway, local6.gateway);
+
             NetCfgChangeType type;
             type = (net.exclude ? NetCfgChangeType::ROUTE_EXCLUDED
                                 : NetCfgChangeType::ROUTE_ADDED);
-            NetCfgChangeEvent chg_ev(type,
-                                     config.iface_name,
-                                     {{"ip_version", (net.ipv6 ? "6" : "4")},
-                                      {"subnet", net.address},
-                                      {"prefix_size", std::to_string(net.prefix_size)},
-                                      {"gateway", (net.ipv6 ? local6.gateway : local4.gateway)}});
+            NetCfgChangeEvent chg_ev(type, config.iface_name, details);
             netCfgDevice.signals->NetworkChange(chg_ev);
+        }
+
+        // Also cache redirect routes if that has been required
+        if (netCfgDevice.reroute_ipv4)
+        {
+            network_cfg->AddVPNroute(Network("0.0.0.0", 1, -1, false, false), "", "");
+            network_cfg->AddVPNroute(Network("128.0.0.0", 1, -1, false, false), "", "");
+        }
+
+        if (netCfgDevice.reroute_ipv6)
+        {
+            network_cfg->AddVPNroute(Network("::", 1, -1, true, false), "", "");
+            network_cfg->AddVPNroute(Network("8000::", 1, -1, true, false), "", "");
         }
     }
 
@@ -274,9 +286,7 @@ class CoreTunbuilderImpl : public CoreTunbuilder
             }
             NetCfgChangeEvent chg_ev(NetCfgChangeType::ROUTE_REMOVED,
                                      ncdev.get_device_name(),
-                                     {{"ip_version", (net.ipv6 ? "6" : "4")},
-                                      {"subnet", net.address},
-                                      {"prefix_size", std::to_string(net.prefix_size)}});
+                                     CachedNetworkConfig::VPNNetworkDetails(net));
             ncdev.signals->NetworkChange(chg_ev);
         }
 
@@ -285,9 +295,7 @@ class CoreTunbuilderImpl : public CoreTunbuilder
         {
             NetCfgChangeEvent chg_ev(NetCfgChangeType::IPADDR_REMOVED,
                                      ncdev.get_device_name(),
-                                     {{"ip_address", ipaddr.address},
-                                      {"prefix_size", std::to_string(ipaddr.prefix_size)},
-                                      {"ip_version", (ipaddr.ipv6 ? "6" : "4")}});
+                                     CachedNetworkConfig::VPNaddressDetails(ipaddr));
             ncdev.signals->NetworkChange(chg_ev);
         }
         NetCfgChangeEvent chg_ev(NetCfgChangeType::DEVICE_REMOVED,
