@@ -465,9 +465,17 @@ Service::Service(DBus::Connection::Ptr con, LogWriter::Ptr lwr, uint8_t loglevel
 
 Service::~Service() noexcept
 {
-    if (logsrvprx_)
+    try
     {
-        logsrvprx_->Detach(INTERFACE_CONFIGMGR);
+        if (logsrvprx_)
+        {
+            logsrvprx_->Detach(INTERFACE_CONFIGMGR);
+        }
+    }
+    catch (const DBus::Exception &excp)
+    {
+        fmt::println("ConfigManager::Service::~Service exception: {}",
+                     excp.GetRawError());
     }
 }
 
