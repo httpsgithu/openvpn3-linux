@@ -261,17 +261,22 @@ class File
 
 
     /**
-     *  Stream helper - formats all the set configuration options and
-     *  their values in a user friendly format.
+     *  Generate a string representation of the current Configuration::File object
+     *
+     *  It generates a human readable string of all the configuration options which
+     *  has been set with their values.
+     *
+     * @return std::string
+     */
+    std::string str() const;
+
+
+    /**
+     *  std::ostream wrapper around Configuration::File::str()
      */
     friend std::ostream &operator<<(std::ostream &os, const File &m)
     {
-        std::string out;
-        for (auto &e : m.map)
-        {
-            out += fmt::format("{}", e);
-        }
-        return os << out;
+        return os << m.str();
     }
 
 

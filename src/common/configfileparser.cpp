@@ -434,6 +434,17 @@ bool File::empty() const
 }
 
 
+std::string File::str() const
+{
+    std::string out;
+    for (auto &e : map)
+    {
+        out += fmt::format("{}", e);
+    }
+    return out;
+}
+
+
 void File::configure_mapping()
 {
     if (!map_configured)
