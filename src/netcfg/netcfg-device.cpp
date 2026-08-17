@@ -148,6 +148,21 @@ NetCfgDevice::NetCfgDevice(DBus::Connection::Ptr dbuscon_,
             return glib2::Value::Create(mode);
         });
 
+    AddPropertyBySpec(
+        "network_config",
+        "a{sv}",
+        [&](const DBus::Object::Property::BySpec &prop) -> GVariant *
+        {
+            if (!tunimpl)
+            {
+                return glib2::Value::NullVariant();
+            }
+            // We need to increase the reference counter, as
+            // the GDBus++ callback handler calling this lambda
+            // will free it.
+            return g_variant_ref(tunimpl->get_network_config());
+        });
+
 
     auto args_add_ipaddr = AddMethod(
         "AddIPAddress",

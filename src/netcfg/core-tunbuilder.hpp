@@ -30,6 +30,13 @@ class CoreTunbuilder : public RC<thread_safe_refcount>
   public:
     virtual int establish(NetCfgDevice &netCfgDevice) = 0;
     virtual void teardown(const NetCfgDevice &netCfgDevice, bool disconnect) = 0;
+
+    /**
+     *  Retrieve the current network configuration this VPN session uses
+     *
+     * @return GVariant*
+     */
+    virtual GVariant *get_network_config() const = 0;
 };
 
 

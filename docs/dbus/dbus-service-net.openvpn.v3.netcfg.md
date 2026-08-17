@@ -236,6 +236,7 @@ interface net.openvpn.v3.netcfg {
       readonly s device_name;
       readwrite u layer;
       readwrite u mtu;
+      readonly a{sv} network_config;
       readwrite b reroute_ipv4;
       readwrite b reroute_ipv6;
       readwrite u txqueuelen;
@@ -454,9 +455,31 @@ not providing any details are not mentioned.
 | device_name         | string           | Read-only  | Virtual device name used by the session.  This may change if the interface needs to be completely reconfigured           |
 | layer               | unsigned integer | Read-write | OSI layer for the VPN to use, 3 for IP (tun device). Setting to 2 (tap device) is currently not implemented              |
 | mtu                 | unsigned integer | Read-write | Sets the MTU for the tun device. Default is 1500                                                                         |
+| network_config      | dictionary       | Read-only  | A key/value dictionary containing the VPN network configuration                                                          |
 | reroute_ipv4        | boolean          | Read-write | Setting this to true, tells the service that the default route should be pointed to the VPN and that mechanism to avoid routing loops should be taken |
 | reroute_ipv6        | boolean          | Read-Write | As reroute_ipv4 but for IPv6                                                                                             |
 | txqueuelen          | unsigned integer | Read-Write | Set the TX queue length of the tun device. If set to 0 or unset, the default from the operating system is used instead   |
+
+
+#### Property: `network_config`
+This property holds a key/value dictionary, spanning four main sections: `remote`, `gateway`, `vpn_addresses` and `routes`.
+
+| Section       | Type          | Description                                                     |
+|---------------|---------------|-----------------------------------------------------------------|
+| remote        | string        | Contains the IP address to the remote host this VPN session is connected to.  This IP address is found in the routing table as a direct route via the best found default gateway on the host. |
+| gateway       | dictionary    | Contains one or two elements, `IPv4` and `IPv6`, containing the gateway IP addresses used for this VPN connection to the server |
+| vpn_addresses | array `(sus)` | Contains an array of tuples, each with 3 elements: local VPN IP address, VPN subnet prefix and remote VPN gateway IP address |
+| routes        | dictionary    | Contains two sections of `include` and `exclude` routes.  More details below. |
+
+The `include` and `exclude` routes define subnets which are being routed into the VPN tunnel (`include`) and routes being excluded from entering the VPN tunnel (`exclude`).  Each of these sections has the same structure and has two sub-sections, one for `IPv4` subnets and one for `IPv6` subnets.  Inside these sub-sections there is an array of tuples with 3 elements each.
+
+The route tuples are defined as `(sun)` with the following fields:
+
+| Field | Type              | Description                                                                     |
+|-------|-------------------|---------------------------------------------------------------------------------|
+|  1    | string            | IP subnet address being routed or excluded from being routed via the VPN tunnel |
+|  2    | unsigned integer  | Subnet prefix, defining the size of the IP subnet                               |
+|  3    | signed 16-bit int | Metric value for the route. A value of `-1` indicates the default metric on the host |
 
 
 D-Bus destination: `net.openvpn.v3.netcfg` \- Object path: `/net/openvpn/v3/netcfg/${UNIQUE_ID}/dco`

@@ -303,6 +303,12 @@ class CoreTunbuilderImpl : public CoreTunbuilder
                                  {});
         ncdev.signals->NetworkChange(chg_ev);
     }
+
+
+    GVariant *get_network_config() const override
+    {
+        return network_cfg->GetNetworkConfig();
+    }
 };
 
 
