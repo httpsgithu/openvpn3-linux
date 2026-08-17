@@ -476,6 +476,7 @@ class BackendClientObject : public DBus::Object::Base
                     {
                     case StatusMinor::CFG_REQUIRE_USER: // Requires reconnect
                     case StatusMinor::CONN_DISCONNECTED:
+                    case StatusMinor::CONN_DONE:
                     case StatusMinor::CONN_FAILED:
                         // When a connection has been torn down,
                         // we need to re-establish the client object
@@ -719,6 +720,7 @@ class BackendClientObject : public DBus::Object::Base
                 case StatusMinor::CONN_AUTH_FAILED:
                 case StatusMinor::CONN_CONNECTED:
                 case StatusMinor::CONN_CONNECTING:
+                case StatusMinor::CONN_DONE:
                 case StatusMinor::CONN_FAILED:
                 case StatusMinor::SESS_AUTH_CHALLENGE:
                 case StatusMinor::SESS_AUTH_URL:
