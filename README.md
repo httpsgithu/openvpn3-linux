@@ -274,32 +274,69 @@ Debugging
 
 For information about debugging, please see [docs/debugging.md](docs/debugging.md)
 
+Source forge hosting and contribution
+-------------------------------------
+
+The OpenVPN 3 Linux project is primarily hosted on codeberg.org and the [Radicle Network](https://radicle.dev/).
+Other source forges are only source code mirrors, where the content is
+pushed by the project maintainer(s) to ensure authenticity.
+
+Bug reports can be reported either via [Codeberg](https://codeberg.org/OpenVPN/openvpn3-linux/issues/)
+or using the Radicle Network (via `rad issue` or the
+[Radicle Desktop](https://radicle.network/desktop)).
+
+Merge/Pull requests and patches should be submitted via the Radicle Network
+or the openvpn-devel@lists.sourceforge.net mailing list.  This is to ensure
+the contributions are distributed and not preserved in a centralised service,
+which might disappear or end up unsuitable as a hosting environment at some
+point.  Both the mailing list and the Radicle Network are fully distributed.
+
+### Primary hosting sites:
+
+- Codeberg: https://codeberg.org/OpenVPN/openvpn3-linux/
+- Radicle Network: `rad:zN58oopqzrAkTregNZaRQpgg7x3c`
+
+### Current mirrors:
+- GitHub: https://github.com/OpenVPN/openvpn3-linux/
+- GitLab: https://gitlab.com/openvpn/openvpn3-linux/
 
 Building from source
 --------------------
 
-For information about building OpenVPN 3 Linux from source, please
-see [BUILD.md](BUILD.md).
+Retrieve the source code from the Radicle Network.  See their
+[Quick-Start Guide](https://radicle.dev/guides/quick-start) for
+installing the tooling needed.  Then run this command:
 
+```sh
+$ rad clone rad:zN58oopqzrAkTregNZaRQpgg7x3c
+```
 
-Contribution
-------------
+More information about `rad clone` can be found in the
+[Cloning a repository](https://radicle.dev/guides/quick-start#cloning-a-repository)
+section.
 
-* Code contributions
-  Code contributions are most welcome.  Please submit patches for review
-  to the openvpn-devel@lists.sourceforge.net mailing list.  All patches must
-  carry a Signed-off-by line and must be reviewed publicly before acceptance.
-  Pull requests are not acceptable unless it is for early reviews and patch
-  discussions.  Final patches *MUST* go to the mailing list.
+Also see the [Your first patch](https://radicle.dev/guides/quick-start#your-first-patch)
+section on how to submit patches (i.e., merge/pull requests) via the
+Radicle Network.
 
-* Testing
-  This code is quite new, but has been used a lot in various setups.
-  Please reach out on libera.chat @ #openvpn for help and discussing issues
-  you encounter, or subscribe to and ask on the
-  openvpn-users@lists.sourceforge.net mailing list.
+For filing bug reports via the Radicle Network, use the
+[Radicle Desktop](https://radicle.network/desktop)) or see the
+[Your first issue](https://radicle.dev/guides/quick-start#your-first-issue)
+section in the quick-start guide.
 
-* Packagers
-  We are beginning to targeting packaging in Linux distributions.  The
-  Fedora Copr repository is one which is currently available.  We are
-  looking for people willing to package this in other Linux distributions
-  as well.
+If you intend to submit patches or fixes to the mailing list, then
+you can use:
+
+```sh
+$ git clone https://radicle.eurephia.org/rad:zN58oopqzrAkTregNZaRQpgg7x3c openvpn3-linux
+```
+
+or use the Codeberg git mirror:
+
+```sh
+$ git clone https://codeberg.org/OpenVPN/openvpn3-linux.git
+```
+
+Once you have fetched the source code, it's time to build OpenVPN 3 Linux.
+See the [BUILD.md](BUILD.md) file for build requirements and steps needed
+for the build.
