@@ -414,7 +414,7 @@ class BackendClientObject : public DBus::Object::Base
     }
 
 
-    const bool Authorize(const Authz::Request::Ptr authzreq) override
+    bool Authorize(const Authz::Request::Ptr authzreq) override
     {
         bool ret = false;
         switch (authzreq->operation)

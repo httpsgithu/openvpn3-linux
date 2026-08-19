@@ -78,8 +78,8 @@ class ProxyLogEvents : public DBus::Object::Base
     void SendStatusChange(const DBus::Object::Path &path,
                           const Events::Status &stchgev) const;
 
-    const bool Authorize(const DBus::Authz::Request::Ptr req) override;
-    const std::string AuthorizationRejected(const DBus::Authz::Request::Ptr req) const noexcept override;
+    bool Authorize(const DBus::Authz::Request::Ptr req) override;
+    std::string AuthorizationRejected(const DBus::Authz::Request::Ptr req) const noexcept override;
 
   private:
     DBus::Connection::Ptr connection = nullptr;

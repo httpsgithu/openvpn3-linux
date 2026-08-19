@@ -579,7 +579,7 @@ void Session::Connect()
 }
 
 
-const bool Session::Authorize(DBus::Authz::Request::Ptr authzreq)
+bool Session::Authorize(DBus::Authz::Request::Ptr authzreq)
 {
     // Early sanity check to see if the backend VPN process is accessible or not
     if (be_prx && be_target)
@@ -679,7 +679,7 @@ const bool Session::Authorize(DBus::Authz::Request::Ptr authzreq)
     return false;
 }
 
-const std::string Session::AuthorizationRejected(const Authz::Request::Ptr azreq) const noexcept
+std::string Session::AuthorizationRejected(const Authz::Request::Ptr azreq) const noexcept
 {
     if (!be_prx || !be_target)
     {

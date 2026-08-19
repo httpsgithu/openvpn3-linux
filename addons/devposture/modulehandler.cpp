@@ -48,7 +48,7 @@ ModuleHandler::ModuleHandler(Module::UPtr mod, const bool external)
 }
 
 
-const bool ModuleHandler::Authorize(const DBus::Authz::Request::Ptr authzreq)
+bool ModuleHandler::Authorize(const DBus::Authz::Request::Ptr authzreq)
 {
     return true;
 }

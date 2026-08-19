@@ -109,7 +109,7 @@ ProxyLogEvents::~ProxyLogEvents() noexcept
 }
 
 
-const bool ProxyLogEvents::Authorize(const DBus::Authz::Request::Ptr req)
+bool ProxyLogEvents::Authorize(const DBus::Authz::Request::Ptr req)
 {
     // Only the user ID of the log proxy target and session manager should
     // be granted access to this object.  The log service will have direct
@@ -135,7 +135,7 @@ const bool ProxyLogEvents::Authorize(const DBus::Authz::Request::Ptr req)
 }
 
 
-const std::string ProxyLogEvents::AuthorizationRejected(const DBus::Authz::Request::Ptr req) const noexcept
+std::string ProxyLogEvents::AuthorizationRejected(const DBus::Authz::Request::Ptr req) const noexcept
 {
     return "Access denied";
 }

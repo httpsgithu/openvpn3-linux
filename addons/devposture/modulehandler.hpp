@@ -35,7 +35,7 @@ class ModuleHandler : public DBus::Object::Base
      */
     ModuleHandler(Module::UPtr mod, const bool external);
 
-    const bool Authorize(const DBus::Authz::Request::Ptr authzreq);
+    bool Authorize(const DBus::Authz::Request::Ptr authzreq);
 
     /**
      *  Run the device posture check

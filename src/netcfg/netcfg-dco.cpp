@@ -170,7 +170,7 @@ NetCfgDCO::~NetCfgDCO()
 }
 
 
-const bool NetCfgDCO::Authorize(const DBus::Authz::Request::Ptr request)
+bool NetCfgDCO::Authorize(const DBus::Authz::Request::Ptr request)
 {
     return true;
 };

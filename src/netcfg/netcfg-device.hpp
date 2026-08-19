@@ -153,7 +153,7 @@ class NetCfgDevice : public DBus::Object::Base
                  const NetCfgOptions &options);
     ~NetCfgDevice() noexcept;
 
-    const bool Authorize(const DBus::Authz::Request::Ptr request) override;
+    bool Authorize(const DBus::Authz::Request::Ptr request) override;
 
     std::string get_device_name() const noexcept;
 

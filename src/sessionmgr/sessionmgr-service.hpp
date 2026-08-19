@@ -69,7 +69,7 @@ class SrvHandler : public Object::Base
      * @param request   Authz::Request object
      * @return Will always return true for the service handler object
      */
-    const bool Authorize(const Authz::Request::Ptr request) override;
+    bool Authorize(const Authz::Request::Ptr request) override;
 
 
   private:

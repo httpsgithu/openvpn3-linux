@@ -64,7 +64,7 @@ Handler::Handler(DBus::Connection::Ptr dbuscon,
 }
 
 
-const bool Handler::Authorize(const DBus::Authz::Request::Ptr authzreq)
+bool Handler::Authorize(const DBus::Authz::Request::Ptr authzreq)
 {
     return true;
 }

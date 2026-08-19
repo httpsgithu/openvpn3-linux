@@ -112,7 +112,7 @@ ConfigHandler::ConfigHandler(DBus::Connection::Ptr dbuscon,
 }
 
 
-const bool ConfigHandler::Authorize(const DBus::Authz::Request::Ptr authzreq)
+bool ConfigHandler::Authorize(const DBus::Authz::Request::Ptr authzreq)
 {
     return true;
 }

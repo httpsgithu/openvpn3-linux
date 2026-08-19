@@ -119,8 +119,8 @@ class Session : public DBus::Object::Base
     void MoveToOwner(const uid_t from_uid, const uid_t to_uid);
 
   protected:
-    const bool Authorize(DBus::Authz::Request::Ptr) override;
-    const std::string AuthorizationRejected(const Authz::Request::Ptr) const noexcept override;
+    bool Authorize(DBus::Authz::Request::Ptr) override;
+    std::string AuthorizationRejected(const Authz::Request::Ptr) const noexcept override;
 
   private:
     using LogProxyList = std::map<std::string, LogProxy::Ptr>;

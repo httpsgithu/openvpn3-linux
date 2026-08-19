@@ -130,7 +130,7 @@ void SrvHandler::SetLogLevel(const uint8_t loglvl)
 }
 
 
-const bool SrvHandler::Authorize(const Authz::Request::Ptr request)
+bool SrvHandler::Authorize(const Authz::Request::Ptr request)
 {
     // There is no ACL management in the service handler object
     return true;

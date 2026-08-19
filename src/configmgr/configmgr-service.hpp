@@ -75,7 +75,7 @@ class ConfigHandler : public DBus::Object::Base
      * @param request   Authz::Request object
      * @return Will always return true for the service handler object
      */
-    const bool Authorize(const DBus::Authz::Request::Ptr authzreq) override;
+    bool Authorize(const DBus::Authz::Request::Ptr authzreq) override;
 
     /**
      *  Sets the directory where the configuration manager should store

@@ -76,7 +76,7 @@ class NetCfgServiceHandler : public DBus::Object::Base
                         the operation and member the caller want to access
      * @return true when access is granted, false rejects the request
      */
-    const bool Authorize(const DBus::Authz::Request::Ptr authzreq) override;
+    bool Authorize(const DBus::Authz::Request::Ptr authzreq) override;
 
   private:
     DBus::Connection::Ptr conn = nullptr;

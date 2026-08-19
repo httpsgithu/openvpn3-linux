@@ -185,7 +185,7 @@ class BackendStarterHandler : public DBus::Object::Base
     }
 
 
-    const bool Authorize(const Authz::Request::Ptr authzreq) override
+    bool Authorize(const Authz::Request::Ptr authzreq) override
     {
         // Allow reading properties from anyone
         if (DBus::Object::Operation::PROPERTY_GET == authzreq->operation)

@@ -110,10 +110,10 @@ class Configuration : public DBus::Object::Base
      *
      * @return true if allowed, false otherwise
      */
-    const bool Authorize(const DBus::Authz::Request::Ptr authzreq) override;
+    bool Authorize(const DBus::Authz::Request::Ptr authzreq) override;
 
 
-    const std::string AuthorizationRejected(const DBus::Authz::Request::Ptr request) const noexcept override;
+    std::string AuthorizationRejected(const DBus::Authz::Request::Ptr request) const noexcept override;
 
     /**
      *  Exports the configuration, including all the available settings

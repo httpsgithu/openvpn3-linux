@@ -286,7 +286,7 @@ NetCfgDevice::~NetCfgDevice() noexcept
 }
 
 
-const bool NetCfgDevice::Authorize(const DBus::Authz::Request::Ptr request)
+bool NetCfgDevice::Authorize(const DBus::Authz::Request::Ptr request)
 {
     return true;
 };

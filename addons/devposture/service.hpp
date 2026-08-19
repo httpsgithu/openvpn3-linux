@@ -34,7 +34,7 @@ class Handler : public DBus::Object::Base
             LogWriter::Ptr logwr,
             uint8_t log_level);
 
-    const bool Authorize(const DBus::Authz::Request::Ptr authzreq) override;
+    bool Authorize(const DBus::Authz::Request::Ptr authzreq) override;
 
     /**
      *  Loads all the device posture protocol profile definitions

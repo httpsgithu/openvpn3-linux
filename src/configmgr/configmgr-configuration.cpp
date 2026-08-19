@@ -181,7 +181,7 @@ Configuration::Configuration(DBus::Connection::Ptr dbuscon,
 }
 
 
-const bool Configuration::Authorize(const DBus::Authz::Request::Ptr authzreq)
+bool Configuration::Authorize(const DBus::Authz::Request::Ptr authzreq)
 {
     switch (authzreq->operation)
     {
@@ -301,7 +301,7 @@ const bool Configuration::Authorize(const DBus::Authz::Request::Ptr authzreq)
 }
 
 
-const std::string Configuration::AuthorizationRejected(const DBus::Authz::Request::Ptr request) const noexcept
+std::string Configuration::AuthorizationRejected(const DBus::Authz::Request::Ptr request) const noexcept
 {
     switch (request->operation)
     {

@@ -173,7 +173,7 @@ NetCfgServiceHandler::NetCfgServiceHandler(DBus::Connection::Ptr conn_,
 }
 
 
-const bool NetCfgServiceHandler::Authorize(const DBus::Authz::Request::Ptr authzreq)
+bool NetCfgServiceHandler::Authorize(const DBus::Authz::Request::Ptr authzreq)
 {
 
     if (DBus::Object::Operation::METHOD_CALL == authzreq->operation)

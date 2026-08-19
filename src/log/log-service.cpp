@@ -354,7 +354,7 @@ ServiceHandler::ServiceHandler(DBus::Connection::Ptr connection_,
 }
 
 
-const bool ServiceHandler::Authorize(const DBus::Authz::Request::Ptr req)
+bool ServiceHandler::Authorize(const DBus::Authz::Request::Ptr req)
 {
     if (DBus::Object::Operation::METHOD_CALL == req->operation)
     {

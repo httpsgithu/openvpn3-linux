@@ -50,7 +50,7 @@ class NetCfgDCO : public DBus::Object::Base
 
     ~NetCfgDCO();
 
-    const bool Authorize(const DBus::Authz::Request::Ptr request) override;
+    bool Authorize(const DBus::Authz::Request::Ptr request) override;
 
     /**
      * Checks for availability of data channel offload kernel module

@@ -194,7 +194,7 @@ class ReqQueueMain : public DBus::Object::Base
     }
 
 
-    const bool Authorize(const DBus::Authz::Request::Ptr request) override
+    bool Authorize(const DBus::Authz::Request::Ptr request) override
     {
         log << "Authorize: " << request << std::endl;
         return true;

@@ -182,7 +182,7 @@ class AWSObject : public DBus::Object::Base
         vpc_routes.clear();
     }
 
-    const bool Authorize(const DBus::Authz::Request::Ptr request) override
+    bool Authorize(const DBus::Authz::Request::Ptr request) override
     {
         return true;
     }

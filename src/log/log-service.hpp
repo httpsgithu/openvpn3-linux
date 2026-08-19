@@ -118,7 +118,7 @@ class ServiceHandler : public DBus::Object::Base
                    DBus::Object::Manager::Ptr obj_mgr,
                    Configuration &&cfgobj);
 
-    const bool Authorize(const DBus::Authz::Request::Ptr req) override;
+    bool Authorize(const DBus::Authz::Request::Ptr req) override;
 
   private:
     // Main service configuration and related objects/members
