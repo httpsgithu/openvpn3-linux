@@ -167,11 +167,11 @@ class BackendSignals : public LogSender
 
 
     void Log(const Events::Log &logev,
-             bool duplicate_check = false,
+             bool no_duplicates = false,
              const std::string &target = "") final
     {
         Events::Log l(logev, session_token);
-        LogSender::Log(l, duplicate_check, logger_busname);
+        LogSender::Log(l, no_duplicates, logger_busname);
     }
 
 

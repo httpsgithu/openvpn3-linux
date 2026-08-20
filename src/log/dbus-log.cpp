@@ -55,7 +55,13 @@ const LogGroup LogSender::GetLogGroup() const
 }
 
 
-void LogSender::Log(const Events::Log &logev, const bool duplicate_check, const std::string &target)
+Events::Log LogSender::NewEvent(LogCategory catg, const std::string &msg)
+{
+    return Events::Log(log_group, catg, msg);
+}
+
+
+void LogSender::Log(const Events::Log &logev, bool no_duplicates, const std::string &target)
 {
     // Don't log an empty messages or if log level filtering allows it
     // The filtering is done against the LogCategory of the message
@@ -64,7 +70,9 @@ void LogSender::Log(const Events::Log &logev, const bool duplicate_check, const 
         return;
     }
 
-    if (duplicate_check)
+    // If this log event is the same as the previous one, skip it
+    // if no duplicates has been requested
+    if (no_duplicates)
     {
         if (!last_logevent.empty() && (logev == last_logevent))
         {
@@ -89,39 +97,39 @@ void LogSender::Log(const Events::Log &logev, const bool duplicate_check, const 
 }
 
 
-void LogSender::Debug(const std::string &msg, const bool duplicate_check)
+void LogSender::Debug(const std::string &msg)
 {
-    Log(Events::Log(log_group, LogCategory::DEBUG, msg), duplicate_check);
+    Log(Events::Log(log_group, LogCategory::DEBUG, msg));
 }
 
-void LogSender::Debug_wnl(const std::string &msg, const bool duplicate_check)
+void LogSender::Debug_wnl(const std::string &msg)
 {
     // Variant of Debug() (with newline) which will not filter out newline (\n)
-    Log(Events::Log(log_group, LogCategory::DEBUG, msg, false), duplicate_check);
+    Log(Events::Log(log_group, LogCategory::DEBUG, msg, false));
 }
 
 
-void LogSender::LogVerb2(const std::string &msg, const bool duplicate_check)
+void LogSender::LogVerb2(const std::string &msg)
 {
-    Log(Events::Log(log_group, LogCategory::VERB2, msg), duplicate_check);
+    Log(Events::Log(log_group, LogCategory::VERB2, msg));
 }
 
 
-void LogSender::LogVerb1(const std::string &msg, const bool duplicate_check)
+void LogSender::LogVerb1(const std::string &msg)
 {
-    Log(Events::Log(log_group, LogCategory::VERB1, msg), duplicate_check);
+    Log(Events::Log(log_group, LogCategory::VERB1, msg));
 }
 
 
-void LogSender::LogInfo(const std::string &msg, const bool duplicate_check)
+void LogSender::LogInfo(const std::string &msg)
 {
-    Log(Events::Log(log_group, LogCategory::INFO, msg), duplicate_check);
+    Log(Events::Log(log_group, LogCategory::INFO, msg));
 }
 
 
-void LogSender::LogWarn(const std::string &msg, const bool duplicate_check)
+void LogSender::LogWarn(const std::string &msg)
 {
-    Log(Events::Log(log_group, LogCategory::WARN, msg), duplicate_check);
+    Log(Events::Log(log_group, LogCategory::WARN, msg));
 }
 
 

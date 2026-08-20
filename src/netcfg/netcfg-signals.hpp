@@ -45,7 +45,7 @@ class NetCfgSignals : public LogSender
      */
     void LogFATAL(const std::string &msg) override;
 
-    void Debug(const std::string &msg, bool duplicate_check = false) override;
+    void Debug(const std::string &msg) override;
 
     void DebugDevice(const std::string &dev, const std::string &msg);
 

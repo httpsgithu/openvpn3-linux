@@ -500,7 +500,9 @@ class CoreVPNClient : public CLIENTBASECLASS
         }
         else if ("GET_CONFIG" == ev.name)
         {
-            signals->LogVerb2("Retrieving configuration from server", true);
+            signals->Log(signals->NewEvent(LogCategory::VERB2,
+                                           "Retrieving configuration from server"),
+                         true);
         }
         else if ("TUN_SETUP_FAILED" == ev.name
                  || "TUN_IFACE_CREATE" == ev.name
@@ -523,7 +525,9 @@ class CoreVPNClient : public CLIENTBASECLASS
         }
         else if ("WAIT" == ev.name)
         {
-            signals->LogVerb1("Waiting for server response", true);
+            signals->Log(signals->NewEvent(LogCategory::VERB1,
+                                           "Waiting for server response"),
+                         true);
         }
         else if ("WAIT_PROXY" == ev.name)
         {
@@ -549,7 +553,9 @@ class CoreVPNClient : public CLIENTBASECLASS
         }
         else if ("RESOLVE" == ev.name)
         {
-            signals->LogVerb2("Resolving", true);
+            signals->Log(signals->NewEvent(LogCategory::VERB2,
+                                           "Resolving"),
+                         true);
         }
         else if ("AUTH_FAILED" == ev.name)
         {

@@ -40,13 +40,24 @@ class LogSender : public DBus::Signals::Group,
 
     const LogGroup GetLogGroup() const;
 
-    virtual void Log(const Events::Log &logev, const bool duplicate_check = false, const std::string &target = "");
-    virtual void Debug(const std::string &msg, const bool duplicate_check = false);
-    virtual void Debug_wnl(const std::string &msg, const bool duplicate_check = false);
-    virtual void LogVerb2(const std::string &msg, const bool duplicate_check = false);
-    virtual void LogVerb1(const std::string &msg, const bool duplicate_check = false);
-    virtual void LogInfo(const std::string &msg, const bool duplicate_check = false);
-    virtual void LogWarn(const std::string &msg, const bool duplicate_check = false);
+    /**
+     *  Creates a new Events::Log object with the same LogGroup
+     *  as this LogSender object is configured to use.
+     *
+     * @param catg   LogCategory to tag the log event with
+     * @param msg    std::string with the log message
+     *
+     * @return Events::Log
+     */
+    Events::Log NewEvent(LogCategory catg, const std::string &msg);
+
+    virtual void Log(const Events::Log &logev, bool no_duplicates = false, const std::string &target = "");
+    virtual void Debug(const std::string &msg);
+    virtual void Debug_wnl(const std::string &msg);
+    virtual void LogVerb2(const std::string &msg);
+    virtual void LogVerb1(const std::string &msg);
+    virtual void LogInfo(const std::string &msg);
+    virtual void LogWarn(const std::string &msg);
     virtual void LogError(const std::string &msg);
     virtual void LogCritical(const std::string &msg);
     virtual void LogFATAL(const std::string &msg);

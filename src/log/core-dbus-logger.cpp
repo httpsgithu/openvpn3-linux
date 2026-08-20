@@ -89,16 +89,14 @@ class DBusLogger
             {
                 logger->Log(Events::Log(log_group,
                                         LogCategory::DEBUG,
-                                        "[" + prefix + "] " + l,
-                                        false));
+                                        "[" + prefix + "] " + l));
             }
             else
             {
                 logger->Log(Events::Log(log_group,
                                         LogCategory::DEBUG,
                                         session_token,
-                                        "[" + prefix + "] " + l,
-                                        false));
+                                        "[" + prefix + "] " + l));
             }
         }
         catch (const DBus::Signals::Exception &)

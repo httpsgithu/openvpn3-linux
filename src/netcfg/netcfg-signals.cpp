@@ -59,7 +59,7 @@ void NetCfgSignals::LogFATAL(const std::string &msg)
 }
 
 
-void NetCfgSignals::Debug(const std::string &msg, bool duplicate_check)
+void NetCfgSignals::Debug(const std::string &msg)
 {
     try
     {
