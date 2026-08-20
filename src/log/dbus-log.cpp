@@ -89,7 +89,7 @@ void LogSender::Log(const Events::Log &logev, bool no_duplicates)
 
     if (!dbus_enabled)
     {
-        log_buffer.push_back(std::move(logev));
+        log_buffer.push_back(logev);
         return;
     }
 
@@ -156,7 +156,7 @@ void LogSender::LogFATAL(const std::string &msg)
 
 Events::Log LogSender::GetLastLogEvent() const
 {
-    return Events::Log(last_logevent);
+    return last_logevent;
 }
 
 
