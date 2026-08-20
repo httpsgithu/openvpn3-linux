@@ -51,7 +51,23 @@ class LogSender : public DBus::Signals::Group,
      */
     Events::Log NewEvent(LogCategory catg, const std::string &msg);
 
+    /**
+     *  Log the Events::Log() object
+     *
+     * This will send the log event both to the D-Bus based log service
+     * as well as logging via the configured LogWriter object.
+     *
+     * If the no_duplicates flag is set to true, if the log event is
+     * identical to the previous log event, it will be skipped.
+     *
+     * @param logev
+     * @param no_duplicates
+     */
     virtual void Log(const Events::Log &logev, bool no_duplicates = false);
+
+
+    // Convenience wrappers that construct Events::Log
+    // and forward to LogSender::Log()
     virtual void Debug(const std::string &msg);
     virtual void Debug_wnl(const std::string &msg);
     virtual void LogVerb2(const std::string &msg);
@@ -61,9 +77,37 @@ class LogSender : public DBus::Signals::Group,
     virtual void LogError(const std::string &msg);
     virtual void LogCritical(const std::string &msg);
     virtual void LogFATAL(const std::string &msg);
+
+    /**
+     *  Retrieve the last Events::Log logged/sent
+     *
+     * @return Events::Log
+     */
     Events::Log GetLastLogEvent() const;
 
+    /**
+     *  Retrieve all collected log events
+     *
+     *  When the LogSender object has been constructed without
+     *  a D-Bus connection, this LogSender object will collect
+     *  all the log events instead.  These events can be retrieved
+     *  from this method.
+     *
+     *  This will only work if the LogSender::LogSender(LogWriter *)
+     *  constructor has been used.   If not it will throw a
+     *  std::runtime_error exception.
+     *
+     * @return std::vector<Events::Log>
+     * @throws std::runtime_error
+     */
     std::vector<Events::Log> GetLogBuffer();
+
+
+    /**
+     *  Retrieve a pointer to the configured LogWriter object
+     *
+     * @return LogWriter*
+     */
     LogWriter *GetLogWriter();
 
 
