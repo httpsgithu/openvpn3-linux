@@ -61,7 +61,7 @@ Events::Log LogSender::NewEvent(LogCategory catg, const std::string &msg)
 }
 
 
-void LogSender::Log(const Events::Log &logev, bool no_duplicates, const std::string &target)
+void LogSender::Log(const Events::Log &logev, bool no_duplicates)
 {
     // Don't log an empty messages or if log level filtering allows it
     // The filtering is done against the LogCategory of the message

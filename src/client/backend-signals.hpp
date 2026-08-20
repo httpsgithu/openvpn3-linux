@@ -166,12 +166,11 @@ class BackendSignals : public LogSender
     }
 
 
-    void Log(const Events::Log &logev,
-             bool no_duplicates = false,
-             const std::string &target = "") final
+    void Log(const Events::Log &logev, bool no_duplicates = false) final
     {
+        // Attach the session token value to the log event
         Events::Log l(logev, session_token);
-        LogSender::Log(l, no_duplicates, logger_busname);
+        LogSender::Log(l, no_duplicates);
     }
 
 
