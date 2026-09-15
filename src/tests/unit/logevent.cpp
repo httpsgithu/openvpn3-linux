@@ -43,8 +43,8 @@ std::string test_empty(const Events::Log &ev, const bool expect)
         return std::string("test_empty() - Member check:  ")
                + "(" + std::to_string((unsigned)ev.group) + ", "
                + std::to_string((unsigned)ev.category) + "', "
-               + "'" + ev.message + "', "
-               + "message.size=" + std::to_string(ev.message.size()) + ") ..."
+               + "'" + ev.GetMessage() + "', "
+               + "message.size=" + std::to_string(ev.GetMessage().size()) + ") ..."
                + " is " + (r ? "EMPTY" : "NON-EMPTY")
                + " [expected: " + (expect ? "EMPTY" : "NON-EMPTY") + "]";
     }
@@ -149,7 +149,7 @@ TEST(LogEvent, parse_gvariant_dict)
 
     ASSERT_EQ(parsed.group, LogGroup::LOGGER);
     ASSERT_EQ(parsed.category, LogCategory::DEBUG);
-    ASSERT_EQ(parsed.message, "Test log message");
+    ASSERT_EQ(parsed.GetMessage(), "Test log message");
     ASSERT_EQ(parsed.format, Events::Log::Format::NORMAL);
 }
 
@@ -166,7 +166,7 @@ TEST(LogEvent, parse_gvariant_tuple)
 
     ASSERT_EQ(parsed.group, LogGroup::BACKENDPROC);
     ASSERT_EQ(parsed.category, LogCategory::INFO);
-    ASSERT_EQ(parsed.message, "Parse testing again");
+    ASSERT_EQ(parsed.GetMessage(), "Parse testing again");
     ASSERT_EQ(parsed.format, Events::Log::Format::NORMAL);
 }
 
@@ -182,7 +182,7 @@ TEST(LogEvent, GetVariantTuple)
 
     ASSERT_EQ(reverse.group, grp);
     ASSERT_EQ(reverse.category, ctg);
-    ASSERT_EQ(reverse.message, msg);
+    ASSERT_EQ(reverse.GetMessage(), msg);
     g_variant_unref(revparse);
 }
 
@@ -199,7 +199,7 @@ TEST(LogEvent, GetVariantDict)
 
     ASSERT_EQ(cmp.group, dicttest.group);
     ASSERT_EQ(cmp.category, dicttest.category);
-    ASSERT_EQ(cmp.message, dicttest.message);
+    ASSERT_EQ(cmp.GetMessage(), dicttest.GetMessage());
 }
 
 
@@ -217,7 +217,7 @@ TEST(LogEvent, parse_gvariant_dict_session_token)
     ASSERT_EQ(parsed.group, LogGroup::LOGGER);
     ASSERT_EQ(parsed.category, LogCategory::DEBUG);
     ASSERT_EQ(parsed.session_token, "session_token_value");
-    ASSERT_EQ(parsed.message, "Test log message");
+    ASSERT_EQ(parsed.GetMessage(), "Test log message");
     ASSERT_EQ(parsed.format, Events::Log::Format::SESSION_TOKEN);
 }
 
@@ -236,7 +236,7 @@ TEST(LogEvent, parse_gvariant_tuple_session_token)
     ASSERT_EQ(parsed.group, LogGroup::BACKENDPROC);
     ASSERT_EQ(parsed.category, LogCategory::INFO);
     ASSERT_EQ(parsed.session_token, "session_token_val");
-    ASSERT_EQ(parsed.message, "Parse testing again");
+    ASSERT_EQ(parsed.GetMessage(), "Parse testing again");
     ASSERT_EQ(parsed.format, Events::Log::Format::SESSION_TOKEN);
 }
 
@@ -254,7 +254,7 @@ TEST(LogEvent, GetVariantTuple_session_token)
     ASSERT_EQ(grp, reverse.group);
     ASSERT_EQ(ctg, reverse.category);
     ASSERT_EQ(sesstok, reverse.session_token);
-    ASSERT_EQ(msg, reverse.message);
+    ASSERT_EQ(msg, reverse.GetMessage());
     g_variant_unref(revparse);
 }
 
@@ -272,7 +272,7 @@ TEST(LogEvent, GetVariantDict_session_token)
     ASSERT_EQ(cmp.group, dicttest.group);
     ASSERT_EQ(cmp.category, dicttest.category);
     ASSERT_EQ(cmp.session_token, dicttest.session_token);
-    ASSERT_EQ(cmp.message, dicttest.message);
+    ASSERT_EQ(cmp.GetMessage(), dicttest.GetMessage());
     ASSERT_EQ(cmp.format, dicttest.format);
 }
 
@@ -282,7 +282,7 @@ std::string test_compare(const Events::Log &lhs, const Events::Log &rhs, const b
     bool r = (lhs.group == rhs.group
               && lhs.category == rhs.category
               && lhs.session_token == rhs.session_token
-              && lhs.message == rhs.message);
+              && lhs.GetMessage() == rhs.GetMessage());
     if (r != expect)
     {
         std::stringstream err;
@@ -297,7 +297,7 @@ std::string test_compare(const Events::Log &lhs, const Events::Log &rhs, const b
     r = (lhs.group != rhs.group
          || lhs.category != rhs.category
          || lhs.session_token != rhs.session_token
-         || lhs.message != rhs.message);
+         || lhs.GetMessage() != rhs.GetMessage());
     if (r == expect)
     {
         std::stringstream err;

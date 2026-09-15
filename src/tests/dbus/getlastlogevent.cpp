@@ -42,8 +42,8 @@ int main(int argc, char **argv)
                   << std::to_string((unsigned int)log.category)
                   << "] " << std::endl;
         std::cout << "   Log message: "
-                  << "[len: " << log.message.size()
-                  << "] " << log.message
+                  << "[len: " << log.GetMessage().size()
+                  << "] " << log.GetMessage()
                   << std::endl;
         return 0;
     }

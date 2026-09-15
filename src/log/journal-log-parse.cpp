@@ -52,8 +52,7 @@ LogEntry::LogEntry(sd_journal *journal)
     event = Events::ParseLog(extract_journal_field(journal, "O3_LOG_GROUP"),
                              extract_journal_field(journal, "O3_LOG_CATEGORY"),
                              extract_journal_field(journal, "O3_SESSION_TOKEN"),
-                             strip_logtag(logtag, msg),
-                             false);
+                             strip_logtag(logtag, msg), false);
 }
 
 
@@ -119,7 +118,7 @@ const Json::Value LogEntry::GetJSON() const
 
         std::stringstream msg;
         std::string line;
-        msg << event.message;
+        msg << event.GetMessage();
         while (std::getline(msg, line, '\n'))
         {
             logev["LOG_MESSAGE"].append(line);

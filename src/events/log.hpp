@@ -60,23 +60,24 @@ struct Log
     /**
      *  Initialize the LogEvent object with the provided details.
      *
-     * @param grp  LogGroup value to use.
-     * @param ctg  LogCategory value to use.
-     * @param msg  std::string containing the log message to use.
-     * @param filter_nl  (optional) Filter out newline (\n) characters in log message (default true)
+     * @param grp            LogGroup value to use.
+     * @param ctg            LogCategory value to use.
+     * @param session_token  std::string containing the session token.
+     * @param msg            std::string containing the log message to use.
+     * @param filter_nl      (optional) Filter out newline (\n) characters in log message (default true)
      */
     Log(LogGroup grp,
         LogCategory ctg,
         const std::string &session_token,
         const std::string &msg,
-        bool filter_nl = true);
+        bool keep_nl = true);
 
     /**
      *  Initialize the LogEvent object with the provided details.
      *
      * @param grp            LogGroup value to use.
      * @param ctg            LogCategory value to use.
-     * @param session_token  char * containing the log message to use.
+     * @param session_token  char * containing the session token.
      * @param msg            char * containing the log message to use.
      * @param filter_nl      (optional) Filter out newline (\n) characters in log message (default true)
      */
@@ -84,9 +85,22 @@ struct Log
         LogCategory ctg,
         const char *session_token,
         const char *msg,
-        bool filter_nl = true);
+        bool filter_nl_ = true);
 
     Log(const Log &logev, const std::string &session_token);
+
+    /**
+     *  Retrieve the log message
+     *
+     *  This is the plain message input filtered for various
+     *  control characters.  If the optional indent variable
+     *  is larger than 0, it will indent all the following lines
+     *  with the given indent line
+     *
+     * @param indent        uint8_t with the indent of following lines (default: 0)
+     * @return std::string
+     */
+    std::string GetMessage(uint8_t indent = 0) const;
 
     /**
      *  Remove the session token from the current log event
@@ -208,10 +222,13 @@ struct Log
     LogGroup group = LogGroup::UNDEFINED;
     LogCategory category = LogCategory::UNDEFINED;
     std::string session_token = {};
-    std::string message = {};
     DBus::Signals::Target::Ptr sender = nullptr;
     LogTag::Ptr logtag = nullptr;
     Format format = Format::AUTO;
+
+  private:
+    bool filter_nl_ = false;
+    std::string message_;
 };
 
 

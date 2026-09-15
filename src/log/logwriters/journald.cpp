@@ -116,7 +116,7 @@ void JournaldWriter::WriteLogLine(LogTag::Ptr logtag,
 }
 
 
-void JournaldWriter::Write(const Events::Log &event)
+void JournaldWriter::Write(const Events::Log &event, uint8_t indent)
 {
     // We need extra elements for O3_LOGTAG, O3_SESSION_TOKEN,
     // O3_LOG_GROUP, O3_LOG_CATEGORY, MESSAGE and
@@ -162,7 +162,7 @@ void JournaldWriter::Write(const Events::Log &event)
     {
         msg += logtag->str(true) + " ";
     }
-    msg += event.message;
+    msg += event.GetMessage(indent);
     l[i++] = prepare_journal_iov("MESSAGE=", msg);
 
     l[i] = {NULL};

@@ -14,7 +14,9 @@
 
 #include <algorithm>
 #include <iomanip>
+#include <ranges>
 #include <string>
+#include <string_view>
 #include <gio/gio.h>
 #include <gdbuspp/glib2/utils.hpp>
 #include <gdbuspp/signals/group.hpp>
@@ -54,7 +56,7 @@ Log::Log(LogGroup grp,
          const std::string &msg,
          bool filter_nl)
     : group(grp), category(ctg),
-      message(filter_ctrl_chars(msg, filter_nl))
+      filter_nl_(filter_nl) , message_(msg)
 {
     format = Format::NORMAL;
 }
@@ -67,7 +69,7 @@ Log::Log(LogGroup grp,
          bool filter_nl)
     : group(grp), category(ctg),
       session_token(session_token),
-      message(filter_ctrl_chars(msg, filter_nl))
+      filter_nl_(filter_nl), message_(msg)
 {
     format = Format::SESSION_TOKEN;
 }
@@ -80,7 +82,7 @@ Log::Log(LogGroup grp,
          bool filter_nl)
     : group(grp), category(ctg),
       session_token(session_token),
-      message(filter_ctrl_chars(msg, filter_nl))
+      filter_nl_(filter_nl), message_(msg)
 {
     format = Format::SESSION_TOKEN;
 }
@@ -89,9 +91,10 @@ Log::Log(LogGroup grp,
 Log::Log(const Log &logev, const std::string &session_token)
     : group(logev.group), category(logev.category),
       session_token(session_token),
-      message(filter_ctrl_chars(logev.message, false))
+      message_(logev.message_)
 {
     format = Format::SESSION_TOKEN;
+    filter_nl_ = logev.filter_nl_;
 }
 
 
@@ -99,6 +102,37 @@ void Log::RemoveToken()
 {
     format = Format::NORMAL;
     session_token.clear();
+}
+
+
+std::string Log::GetMessage(uint8_t indent) const
+{
+    if (indent == 0)
+    {
+        return filter_ctrl_chars(message_, filter_nl_);
+    }
+
+    std::string raw_message = filter_ctrl_chars(message_, filter_nl_);
+    auto lines = raw_message
+                 | std::views::split('\n')
+                 | std::views::transform([](auto &&r)
+                                         {
+                                             return std::string_view(r.begin(), r.end());
+                                         });
+
+    std::string ret;
+    bool first = true;
+    for (std::string_view line : lines)
+    {
+        if (!first)
+        {
+            ret += '\n';
+            ret.append(indent, ' ');
+        }
+        first = false;
+        ret += line;
+    }
+    return ret;
 }
 
 
@@ -138,7 +172,7 @@ GVariant *Log::GetGVariantTuple() const
     {
         glib2::Builder::Add(bld, session_token);
     }
-    glib2::Builder::Add(bld, message);
+    glib2::Builder::Add(bld, GetMessage());
 
     return glib2::Builder::Finish(bld);
 }
@@ -154,7 +188,7 @@ GVariant *Log::GetGVariantDict() const
     {
         glib2::Dict::Add(dict, "log_session_token", glib2::Value::Create(session_token));
     }
-    glib2::Dict::Add(dict, "log_message", glib2::Value::Create(message));
+    glib2::Dict::Add(dict, "log_message", glib2::Value::Create(GetMessage()));
 
     return glib2::Dict::Finish(dict);
 }
@@ -187,8 +221,9 @@ void Log::reset()
     group = LogGroup::UNDEFINED;
     category = LogCategory::UNDEFINED;
     session_token.clear();
-    message.clear();
+    message_.clear();
     format = Format::AUTO;
+    filter_nl_ = false;
 }
 
 
@@ -196,13 +231,13 @@ bool Log::empty(bool only_message) const
 {
     if (only_message)
     {
-        return message.empty();
+        return message_.empty();
     }
 
     return (LogGroup::UNDEFINED == group)
            && (LogCategory::UNDEFINED == category)
            && session_token.empty()
-           && message.empty();
+           && message_.empty();
 }
 
 
@@ -213,27 +248,9 @@ std::string Log::str(unsigned short indent, bool prefix) const
     {
         r << LogPrefix(group, category);
     }
-    if (indent > 0)
-    {
-        std::stringstream msg;
-        std::string line;
-        msg << message;
-        bool first = true;
-        while (std::getline(msg, line, '\n'))
-        {
-            if (!first)
-            {
-                r << std::endl
-                  << std::setw(indent) << std::setfill(' ') << " ";
-            }
-            first = false;
-            r << line;
-        }
-    }
-    else
-    {
-        r << message;
-    }
+
+    r << GetMessage(indent);
+
 
     return std::string(r.str());
 }
@@ -245,14 +262,14 @@ bool Log::operator==(const Log &compare) const
     {
         return ((compare.group == group)
                 && (compare.category == category)
-                && (0 == compare.message.compare(message)));
+                && (0 == compare.message_.compare(message_)));
     }
     else
     {
         return ((compare.group == group)
                 && (compare.category == category)
                 && (0 == compare.session_token.compare(session_token))
-                && (0 == compare.message.compare(message)));
+                && (0 == compare.message_.compare(message_)));
     }
 }
 

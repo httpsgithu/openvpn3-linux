@@ -159,14 +159,16 @@ class LogWriter
      *  be provided to the logging backend
      *
      * @param logev  Populated LogEvent() object to log
+     * @param indent Number of spaces to indent the following
+     *               lines, defaults to 0.
      *
      */
-    virtual void Write(const Events::Log &logev)
+    virtual void Write(const Events::Log &logev, uint8_t indent = 0)
     {
         WriteLogLine(logev.GetLogTag(),
                      logev.group,
                      logev.category,
-                     logev.message);
+                     logev.GetMessage(indent));
     }
 
 
