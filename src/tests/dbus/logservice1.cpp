@@ -85,6 +85,8 @@ int cmd_send(ParsedArgs::Ptr args)
     std::string path = (args->Present("object-path") ? args->GetValue("object-path", 0) : "/net/openvpn/v3/logtest");
     std::string intf = (args->Present("interface") ? args->GetValue("interface", 0) : "net.openvpn.v3.logtest");
 
+    bool add_nl = args->Present("add-newline");
+    bool allow_nl = args->Present("allow-newline");
     auto extra = args->GetAllExtraArgs();
     std::string msg = "(empty message)";
     if (extra.size() > 0)
@@ -92,14 +94,17 @@ int cmd_send(ParsedArgs::Ptr args)
         msg = "";
         for (const auto &t : extra)
         {
-            msg += t + " ";
+            msg += t + (add_nl ? "\n" : " ");
         }
     }
 
-    Events::Log ev(lgrp, lctg, msg, !args->Present("allow-newline"));
+    Events::Log ev(lgrp, lctg, msg, !allow_nl);
+
     std::cout << "     Path: " << path << std::endl;
     std::cout << "Interface: " << intf << std::endl;
-    std::cout << "Log event: " << ev << std::endl;
+    std::cout << " Allow nl: " << (allow_nl ? "yes" : "no") << std::endl;
+    std::cout << "   Add nl: " << (add_nl ? "yes" : "no") << std::endl;
+    std::cout << "Log event: |" << ev << "|" << std::endl;
     try
     {
         LogServiceProxy logsrvprx(dbuscon);
@@ -157,6 +162,7 @@ int main(int argc, char **argv)
     send->AddOption("group", 'g', "INTEGER", true, "LogGroup value to use for the log event");
     send->AddOption("category", 'c', "INTEGER", true, "LogCategory value to use for the log event");
     send->AddOption("allow-newline", 'n', "Allow newlines to be passed on");
+    send->AddOption("add-newline", 'N', "Adds a new line for each message argument");
     cmds.RegisterCommand(send);
 
     try
