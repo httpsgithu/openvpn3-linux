@@ -92,6 +92,7 @@ Log::Log(const Log &logev, const std::string &session_token)
 {
     format = Format::SESSION_TOKEN;
     keep_nl_ = logev.keep_nl_;
+    indent_ = logev.indent_;
 }
 
 
@@ -109,9 +110,9 @@ Log &Log::KeepNL() noexcept
 }
 
 
-std::string Log::GetMessage(uint8_t indent) const
+std::string Log::GetMessage() const
 {
-    if (indent == 0)
+    if (indent_ == 0)
     {
         return filter_ctrl_chars(message_, !keep_nl_);
     }
@@ -131,7 +132,7 @@ std::string Log::GetMessage(uint8_t indent) const
         if (!first)
         {
             ret += '\n';
-            ret.append(indent, ' ');
+            ret.append(indent_, ' ');
         }
         first = false;
         ret += line;
@@ -245,18 +246,18 @@ bool Log::empty(bool only_message) const
 }
 
 
-std::string Log::str(unsigned short indent, bool prefix) const
+Log &Log::SetIndent(uint8_t spaces)
 {
-    std::ostringstream r;
-    if (prefix)
-    {
-        r << LogPrefix(group, category);
-    }
-
-    r << GetMessage(indent);
+    indent_ = spaces;
+    return *this;
+}
 
 
-    return std::string(r.str());
+std::string Log::str(bool prefix) const
+{
+    return fmt::format("{}{}",
+                       (prefix ? LogPrefix(group, category) : ""),
+                       GetMessage());
 }
 
 
