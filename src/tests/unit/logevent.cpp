@@ -130,19 +130,21 @@ TEST(LogEvent, str_keepnl)
     }
     auto ev_keepnl = Events::Log(LogGroup::LOGGER, LogCategory::DEBUG, msg).KeepNL();
 
-    std::string chk_indent = "Logger DEBUG: Test Line 1\n    Test Line 2\n    Test Line 3\n"
-                             "    Test Line 4\n    Test Line 5\n    Test Line 6\n    Test Line 7\n"
-                             "    Test Line 8\n    Test Line 9\n    Test Line 10";
-    EXPECT_STREQ(ev_keepnl.str(4).c_str(), chk_indent.c_str()) << "FAILED: Event::Log::str(4)";
-
-    // The std::string operator() uses 4 space indents by default
-    std::string test_str = ev_keepnl;
-    EXPECT_STREQ(test_str.c_str(), chk_indent.c_str()) << "FAILED: std::string Event::Log::operator()";
-
+    // Default indenting is 0
     std::string chk = "Logger DEBUG: Test Line 1\nTest Line 2\nTest Line 3\n"
                       "Test Line 4\nTest Line 5\nTest Line 6\nTest Line 7\n"
                       "Test Line 8\nTest Line 9\nTest Line 10";
-    EXPECT_STREQ(ev_keepnl.str().c_str(), chk.c_str()) << "FAILED: Event::Log::str()";
+    EXPECT_EQ(ev_keepnl.str(), chk) << "FAILED: Event::Log::str()";
+
+    // Set indenting to 4 spaces
+    std::string chk_indent = "Logger DEBUG: Test Line 1\n    Test Line 2\n    Test Line 3\n"
+                             "    Test Line 4\n    Test Line 5\n    Test Line 6\n    Test Line 7\n"
+                             "    Test Line 8\n    Test Line 9\n    Test Line 10";
+    EXPECT_EQ(ev_keepnl.SetIndent(4).str(), chk_indent) << "FAILED: Event::Log::str(4)";
+
+    std::string test_str = ev_keepnl;
+    EXPECT_EQ(test_str, chk_indent) << "FAILED: std::string Event::Log::operator()";
+
 }
 
 
@@ -158,12 +160,12 @@ TEST(LogEvent, str_no_keepnl)
     std::string chk = "Logger DEBUG: Test Line 1Test Line 2Test Line 3"
                       "Test Line 4Test Line 5Test Line 6Test Line 7"
                       "Test Line 8Test Line 9Test Line 10";
-    EXPECT_STREQ(ev_nonl.str(4).c_str(), chk.c_str()) << "FAILED: Event::Log::str(4)";
-    EXPECT_STREQ(ev_nonl.str().c_str(), chk.c_str()) << "FAILED: Event::Log::str()";
+    EXPECT_EQ(ev_nonl.SetIndent(4).str(), chk) << "FAILED: Event::Log::str(4)";
+    EXPECT_EQ(ev_nonl.str(), chk) << "FAILED: Event::Log::str()";
 
     // The std::string operator() uses 4 space indents by default
     std::string test_str = ev_nonl;
-    EXPECT_STREQ(test_str.c_str(), chk.c_str()) << "FAILED: std::string Event::Log::operator()";
+    EXPECT_EQ(test_str, chk) << "FAILED: std::string Event::Log::operator()";
 }
 
 
@@ -179,12 +181,12 @@ TEST(LogEvent, message_keepnl)
     std::string chk_indent = "Test Line 1\n    Test Line 2\n    Test Line 3\n"
                              "    Test Line 4\n    Test Line 5\n    Test Line 6\n    Test Line 7\n"
                              "    Test Line 8\n    Test Line 9\n    Test Line 10";
-    EXPECT_STREQ(ev_keepnl.GetMessage(4).c_str(), chk_indent.c_str()) << "FAILED: Event::Log::message(4)";
+    EXPECT_EQ(ev_keepnl.SetIndent(4).GetMessage(), chk_indent) << "FAILED: Event::Log::message(4)";
 
     std::string chk = "Test Line 1\nTest Line 2\nTest Line 3\n"
                       "Test Line 4\nTest Line 5\nTest Line 6\nTest Line 7\n"
                       "Test Line 8\nTest Line 9\nTest Line 10";
-    EXPECT_STREQ(ev_keepnl.GetMessage().c_str(), chk.c_str()) << "FAILED: Event::Log::message()";
+    EXPECT_EQ(ev_keepnl.SetIndent(0).GetMessage(), chk) << "FAILED: Event::Log::message()";
 }
 
 
@@ -200,8 +202,8 @@ TEST(LogEvent, message_no_keepnl)
     std::string chk = "Test Line 1Test Line 2Test Line 3"
                       "Test Line 4Test Line 5Test Line 6Test Line 7"
                       "Test Line 8Test Line 9Test Line 10";
-    EXPECT_STREQ(ev_nonl.GetMessage(4).c_str(), chk.c_str()) << "FAILED: Event::Log::message(4)";
-    EXPECT_STREQ(ev_nonl.GetMessage().c_str(), chk.c_str()) << "FAILED: Event::Log::message()";
+    EXPECT_EQ(ev_nonl.SetIndent(4).GetMessage(), chk) << "FAILED: Event::Log::message(4)";
+    EXPECT_EQ(ev_nonl.GetMessage(), chk) << "FAILED: Event::Log::message()";
 }
 
 
@@ -534,7 +536,7 @@ TEST(LogEvent, multiline_str)
     std::string msg1 = "Log line 1\nLog line 2\nLog Line 3";
     Events::Log ev1(LogGroup::LOGGER, LogCategory::DEBUG, msg1);
     ev1.KeepNL();
-    EXPECT_EQ(ev1.str(0, false), msg1) << "ev1.str(0, false)";
+    EXPECT_EQ(ev1.str(false), msg1) << "ev1.str(0, false)";
 
     // Check formatting with LogPrefix and no indenting of NL
     std::string msg1prfx = fmt::format("{}{}",
@@ -545,7 +547,7 @@ TEST(LogEvent, multiline_str)
 
     // Events::Log::str(indent, prefix_flag) - 5 space indent and no prefix
     std::string msg1ind5 = "Log line 1\n     Log line 2\n     Log Line 3";
-    EXPECT_EQ(ev1.str(5, false), msg1ind5) << "ev1.str(5, false)";
+    EXPECT_EQ(ev1.SetIndent(5).str(false), msg1ind5) << "ev1.str(5, false)";
 
     // Check formatting filtering out newlines
     // Same as above, but the resulting output is a single line
@@ -561,7 +563,7 @@ TEST(LogEvent, multiline_operator_stdstring)
     Events::Log ev1(LogGroup::LOGGER, LogCategory::DEBUG, msg1);
     ev1.KeepNL();
     // Tests std::string Events::Log::operator()
-    std::string ev1_chk = ev1;
+    std::string ev1_chk = ev1.SetIndent(4);
 
     // Check formatting with LogPrefix - operator() indents with 4 spaces
     std::string msg1prfx = fmt::format("{}Log line 1\n    Log line 2\n    Log Line 3",
@@ -622,21 +624,21 @@ TEST(LogEvent, message_filter)
                            "\x19\x0E\x1b[31m characters"};
     std::string expected_below_0x20_wo_nl{"This is a  test  with  various control [31m characters"};
     Events::Log ev_b0x20(LogGroup::LOGGER, LogCategory::DEBUG, below_0x20);
-    EXPECT_EQ(ev_b0x20.str(0, false), expected_below_0x20_wo_nl);
+    EXPECT_EQ(ev_b0x20.str(false), expected_below_0x20_wo_nl);
 
     std::string expected_below_0x20_with_nl{"This is a  test  with  various \n\ncontrol [31m characters"};
     auto ev_b0x20_w_nl = Events::Log(LogGroup::LOGGER, LogCategory::DEBUG, below_0x20).KeepNL();
-    EXPECT_EQ(ev_b0x20_w_nl.str(0, false), expected_below_0x20_with_nl);
+    EXPECT_EQ(ev_b0x20_w_nl.str(false), expected_below_0x20_with_nl);
 
     std::string with_nl("This is line 1\nThis is line 2\nThis is line 3\n\n\n");
     // Trailing \n is always removed
     std::string expected_with_nl{"This is line 1\nThis is line 2\nThis is line 3"};
     auto ev_with_nl = Events::Log(LogGroup::LOGGER, LogCategory::DEBUG, with_nl).KeepNL();
-    EXPECT_EQ(ev_with_nl.str(0, false), expected_with_nl);
+    EXPECT_EQ(ev_with_nl.str(false), expected_with_nl);
 
     std::string expected_wo_nl{"This is line 1This is line 2This is line 3"};
     auto ev_wo_nl = Events::Log(LogGroup::LOGGER, LogCategory::DEBUG, with_nl);
-    EXPECT_EQ(ev_wo_nl.str(0, false), expected_wo_nl);
+    EXPECT_EQ(ev_wo_nl.str(false), expected_wo_nl);
 }
 
 } // namespace unittest

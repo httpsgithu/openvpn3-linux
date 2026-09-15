@@ -101,14 +101,12 @@ struct Log
      *  Retrieve the log message
      *
      *  This is the plain message input filtered for various
-     *  control characters.  If the optional indent variable
-     *  is larger than 0, it will indent all the following lines
-     *  with the given indent line
+     *  control characters.  Newline handling depends
+     *  if Events::Log::KeepNL() has been called.
      *
-     * @param indent        uint8_t with the indent of following lines (default: 0)
      * @return std::string
      */
-    std::string GetMessage(uint8_t indent = 0) const;
+    std::string GetMessage() const;
 
     /**
      *  Remove the session token from the current log event
@@ -190,23 +188,20 @@ struct Log
      */
     bool empty(bool only_message = false) const;
 
+
+    Log &SetIndent(uint8_t spaces);
+
     /**
      *  Extract a formatted std::string of the log event.
-     *
-     *  The indent argument controls if indent width to use
-     *  when a log message contains multiple lines.  The
-     *  following lines will be indented with this width.
      *
      *  The optional prefix argument enables or disables the
      *  log group and category string added before the log
      *  message.  The default is to enable this prefix.
      *
-     * @param indent              unsigned short of the number of spaces to
-     *                            use for indenting
      * @param prefix              bool enabling/disabling log group/category prefix
      * @return const std::string  Returns a formatted string of the log event.
      */
-    std::string str(unsigned short indent = 0, bool prefix = true) const;
+    std::string str(bool prefix = true) const;
 
     bool operator==(const Log &compare) const;
     bool operator!=(const Log &compare) const;
@@ -218,15 +213,12 @@ struct Log
      *  Retrieve a human readable string when this object is treated as
      *  a std::string
      *
-     *  This is similar to operator<<(), but it will indent multiple lines
-     *  with 4 spaces.
-     *
      * @return std::string
      */
     operator std::string() const;
 
     /**
-     *  Makes it possible to write LogEvents in a readable format
+     *  Makes it possible to write Events::Log in a readable format
      *  via iostreams, such as 'std::cout << event', where event is a
      *  LogEvent object.
      *
@@ -250,6 +242,7 @@ struct Log
 
   private:
     bool keep_nl_ = false;
+    uint8_t indent_ = 0;
     std::string message_;
 };
 

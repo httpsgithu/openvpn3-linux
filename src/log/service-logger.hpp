@@ -90,14 +90,17 @@ inline void Logger::Log(const Events::Log &logev,
                         LogMetaData::Ptr metadata,
                         const bool duplicate_check)
 {
+    // TODO: Missing a mutex lockguard?
     if (duplicate_check && logev == last_log)
     {
         // If duplicate check is enabled, we skip this log event if
         // it's identical to the last previously logged event
         return;
     }
+    last_log = logev;
+    last_log.SetIndent(11);
 
-    if (filter && !filter->Allow(logev))
+    if (filter && !filter->Allow(last_log))
     {
         // Only perform the logging if the log event is within the log level
         // scope of this logger service
@@ -109,8 +112,7 @@ inline void Logger::Log(const Events::Log &logev,
         logwr->AddMetaCopy(metadata);
     }
 
-    logwr->Write(logev, 11);
-    last_log = logev;
+    logwr->Write(last_log);
 }
 
 

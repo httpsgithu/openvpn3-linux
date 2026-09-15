@@ -55,7 +55,7 @@ class JournaldWriter : public LogWriter
      */
     bool TimestampEnabled() override;
 
-    void Write(const Events::Log &event, uint8_t indent = 0) override;
+    void Write(const Events::Log &event) override;
 
 
   protected:

@@ -116,7 +116,7 @@ void JournaldWriter::WriteLogLine(LogTag::Ptr logtag,
 }
 
 
-void JournaldWriter::Write(const Events::Log &event, uint8_t indent)
+void JournaldWriter::Write(const Events::Log &event)
 {
     // We need extra elements for O3_LOGTAG, O3_SESSION_TOKEN,
     // O3_LOG_GROUP, O3_LOG_CATEGORY, MESSAGE and
@@ -127,7 +127,7 @@ void JournaldWriter::Write(const Events::Log &event, uint8_t indent)
     if (!l)
     {
         throw JournalWriterException("Failed to allocate data for log event: "
-                                     + event.str(10, true));
+                                     + event.str(true));
     }
 
     // Add the fixed O3_LOG_SENDER data, to more easily identify
@@ -162,7 +162,7 @@ void JournaldWriter::Write(const Events::Log &event, uint8_t indent)
     {
         msg += logtag->str(true) + " ";
     }
-    msg += event.GetMessage(indent);
+    msg += event.GetMessage();
     l[i++] = prepare_journal_iov("MESSAGE=", msg);
 
     l[i] = {NULL};

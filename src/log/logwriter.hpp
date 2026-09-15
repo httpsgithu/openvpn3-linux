@@ -153,22 +153,19 @@ class LogWriter
 
 
     /**
-     *  Writes a LogEvent() object in a formatted way.
+     *  Writes a Events::Log object in a formatted way.
      *
      *  If the Events::Log object contains a LogTag, this will
-     *  be provided to the logging backend
+     *  be provided to the logging backend.
      *
-     * @param logev  Populated LogEvent() object to log
-     * @param indent Number of spaces to indent the following
-     *               lines, defaults to 0.
-     *
+     * @param logev  Populated Events::Log object to log
      */
-    virtual void Write(const Events::Log &logev, uint8_t indent = 0)
+    virtual void Write(const Events::Log &logev)
     {
         WriteLogLine(logev.GetLogTag(),
                      logev.group,
                      logev.category,
-                     logev.GetMessage(indent));
+                     logev.GetMessage());
     }
 
 
