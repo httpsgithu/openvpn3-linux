@@ -264,3 +264,13 @@ struct Log
 
 
 } // namespace Events
+
+
+/**
+ *  libfmt / fmt::format support, wrapping
+ *  Events::Status::operator<<()
+ */
+template <>
+struct fmt::formatter<Events::Log> : fmt::ostream_formatter
+{
+};
