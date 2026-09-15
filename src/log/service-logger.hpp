@@ -109,7 +109,7 @@ inline void Logger::Log(const Events::Log &logev,
         logwr->AddMetaCopy(metadata);
     }
 
-    logwr->Write(logev);
+    logwr->Write(logev, 11);
     last_log = logev;
 }
 

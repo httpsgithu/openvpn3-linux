@@ -59,7 +59,7 @@ EventLogger::EventLogger(DBus::MainLoop::Ptr mainl,
         [&](const Events::Log logev)
         {
             // Reformat the log message with appropriate indenting
-             logdest->Write(Events::Log(logev.group, logev.category, logev.GetMessage(23), false));
+            logdest->Write(Events::Log(logev.group, logev.category, logev.str(23, false)).KeepNL());
         });
 
     sighandler_statuschg = ::Signals::ReceiveStatusChange::Create(

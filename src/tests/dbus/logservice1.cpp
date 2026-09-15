@@ -98,7 +98,11 @@ int cmd_send(ParsedArgs::Ptr args)
         }
     }
 
-    Events::Log ev(lgrp, lctg, msg, !allow_nl);
+    Events::Log ev(lgrp, lctg, msg);
+    if (allow_nl)
+    {
+        ev.KeepNL();
+    }
 
     std::cout << "     Path: " << path << std::endl;
     std::cout << "Interface: " << intf << std::endl;

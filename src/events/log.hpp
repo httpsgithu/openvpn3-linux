@@ -46,48 +46,56 @@ struct Log
 
     /**
      *  Initialize the LogEvent object with the provided details.
+     *  The message is stored as-is; use KeepNL() to preserve newlines
+     *  in str() output, otherwise newlines are filtered.
      *
      * @param grp  LogGroup value to use.
      * @param ctg  LogCategory value to use.
      * @param msg  std::string containing the log message to use.
-     * @param filter_nl  (optional) Filter out newline (\n) characters in log message (default true)
      */
     Log(LogGroup grp,
         LogCategory ctg,
-        const std::string &msg,
-        bool filter_nl = true);
+        const std::string &msg);
 
     /**
-     *  Initialize the LogEvent object with the provided details.
+     *  Initialize the LogEvent object with session token and message.
+     *  The message is stored as-is; use KeepNL() to preserve newlines
+     *  in str() output, otherwise newlines are filtered.
      *
      * @param grp            LogGroup value to use.
      * @param ctg            LogCategory value to use.
      * @param session_token  std::string containing the session token.
      * @param msg            std::string containing the log message to use.
-     * @param filter_nl      (optional) Filter out newline (\n) characters in log message (default true)
      */
     Log(LogGroup grp,
         LogCategory ctg,
         const std::string &session_token,
-        const std::string &msg,
-        bool keep_nl = true);
+        const std::string &msg);
 
     /**
-     *  Initialize the LogEvent object with the provided details.
+     *  Initialize the LogEvent object with session token and message.
+     *  The message is stored as-is; use KeepNL() to preserve newlines
+     *  in str() output, otherwise newlines are filtered.
      *
      * @param grp            LogGroup value to use.
      * @param ctg            LogCategory value to use.
      * @param session_token  char * containing the session token.
      * @param msg            char * containing the log message to use.
-     * @param filter_nl      (optional) Filter out newline (\n) characters in log message (default true)
      */
     Log(LogGroup grp,
         LogCategory ctg,
         const char *session_token,
-        const char *msg,
-        bool filter_nl_ = true);
+        const char *msg);
 
     Log(const Log &logev, const std::string &session_token);
+
+    /**
+     *  Preserve newline characters when str() formats the log message.
+     *  By default str() filters out newline characters.
+     *
+     * @return Reference to this object, for call chaining.
+     */
+    Log &KeepNL() noexcept;
 
     /**
      *  Retrieve the log message
@@ -241,7 +249,7 @@ struct Log
     Format format = Format::AUTO;
 
   private:
-    bool filter_nl_ = false;
+    bool keep_nl_ = false;
     std::string message_;
 };
 
@@ -255,13 +263,11 @@ struct Log
  * @param ctg_s       std::string containing the LogCategory string representation
  * @param sess_token  std::string containing the session token value
  * @param msg         std::string containing the log message
- * @param filter_nl  (optional) Filter out newline (\n) characters in log message (default true)
  */
 [[nodiscard]] Log ParseLog(const std::string &grp_s,
                            const std::string &ctg_s,
                            const std::string &sess_token,
-                           const std::string &msg,
-                           bool filter_nl = true);
+                           const std::string &msg);
 
 
 /**
@@ -272,12 +278,10 @@ struct Log
  * @param grp_s  std::string containing the LogGroup string representation
  * @param ctg_s  std::string containing the LogCategory string representation
  * @param msg    std::string containing the log message
- * @param filter_nl  (optional) Filter out newline (\n) characters in log message (default true)
  */
 [[nodiscard]] Log ParseLog(const std::string &grp_s,
                            const std::string &ctg_s,
-                           const std::string &msg,
-                           bool filter_nl = true);
+                           const std::string &msg);
 
 
 /**

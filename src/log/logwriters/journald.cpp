@@ -100,7 +100,7 @@ void JournaldWriter::WriteLogLine(LogTag::Ptr logtag,
                                   const std::string &colour_reset)
 {
     Events::Log logev(LogGroup::UNDEFINED, LogCategory::INFO, data);
-    JournaldWriter::Write(logev.AddLogTag(logtag));
+    JournaldWriter::Write(logev.AddLogTag(logtag).KeepNL());
 }
 
 
@@ -112,7 +112,7 @@ void JournaldWriter::WriteLogLine(LogTag::Ptr logtag,
                                   const std::string &colour_reset)
 {
     Events::Log logev(grp, ctg, data);
-    JournaldWriter::Write(logev.AddLogTag(logtag));
+    JournaldWriter::Write(logev.AddLogTag(logtag).KeepNL());
 }
 
 

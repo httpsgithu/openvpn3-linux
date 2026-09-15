@@ -96,8 +96,8 @@ void LogSender::Debug(const std::string &msg)
 
 void LogSender::Debug_wnl(const std::string &msg)
 {
-    // Variant of Debug() (with newline) which will not filter out newline (\n)
-    Log(Events::Log(log_group, LogCategory::DEBUG, msg, false));
+    // Preserve newline (\n) characters in the message
+    Log(Events::Log(log_group, LogCategory::DEBUG, msg).KeepNL());
 }
 
 

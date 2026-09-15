@@ -67,7 +67,7 @@ EventLogger::EventLogger(DBus::MainLoop::Ptr mainl,
         signal_sender,
         [&](const Events::Log logev)
         {
-            logdest->Write(Events::Log(logev.group, logev.category, logev.GetMessage(26), false));
+            logdest->Write(Events::Log(logev.group, logev.category, logev.str(26)).KeepNL());
         });
 
     sighandler_statuschg = Signals::ReceiveStatusChange::Create(

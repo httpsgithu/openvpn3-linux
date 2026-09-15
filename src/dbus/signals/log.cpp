@@ -36,7 +36,7 @@ Log::Log(DBus::Signals::Emit::Ptr emitter,
                           {
                               try
                               {
-                                  Events::Log ev = Events::ParseLog(event->params);
+                                  Events::Log ev = Events::ParseLog(event->params).KeepNL();
                                   (void)Send(ev);
                               }
                               catch (const DBus::Exception &ex)
@@ -107,7 +107,7 @@ ReceiveLog::ReceiveLog(DBus::Signals::SubscriptionManager::Ptr subscr,
             auto sender = DBus::Signals::Target::Create(event->sender,
                                                         event->object_path,
                                                         event->object_interface);
-            auto logev = Events::ParseLog(params, std::move(sender));
+            auto logev = Events::ParseLog(params, std::move(sender)).KeepNL();
             log_callback(std::move(logev));
         });
 }

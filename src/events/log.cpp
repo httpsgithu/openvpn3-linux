@@ -53,10 +53,9 @@ Log::Log()
 
 Log::Log(LogGroup grp,
          LogCategory ctg,
-         const std::string &msg,
-         bool filter_nl)
+         const std::string &msg)
     : group(grp), category(ctg),
-      filter_nl_(filter_nl) , message_(msg)
+      message_(msg)
 {
     format = Format::NORMAL;
 }
@@ -65,11 +64,10 @@ Log::Log(LogGroup grp,
 Log::Log(LogGroup grp,
          LogCategory ctg,
          const std::string &session_token,
-         const std::string &msg,
-         bool filter_nl)
+         const std::string &msg)
     : group(grp), category(ctg),
       session_token(session_token),
-      filter_nl_(filter_nl), message_(msg)
+      message_(msg)
 {
     format = Format::SESSION_TOKEN;
 }
@@ -78,11 +76,10 @@ Log::Log(LogGroup grp,
 Log::Log(LogGroup grp,
          LogCategory ctg,
          const char *session_token,
-         const char *msg,
-         bool filter_nl)
+         const char *msg)
     : group(grp), category(ctg),
       session_token(session_token),
-      filter_nl_(filter_nl), message_(msg)
+      message_(msg)
 {
     format = Format::SESSION_TOKEN;
 }
@@ -94,7 +91,7 @@ Log::Log(const Log &logev, const std::string &session_token)
       message_(logev.message_)
 {
     format = Format::SESSION_TOKEN;
-    filter_nl_ = logev.filter_nl_;
+    keep_nl_ = logev.keep_nl_;
 }
 
 
@@ -105,14 +102,21 @@ void Log::RemoveToken()
 }
 
 
+Log &Log::KeepNL() noexcept
+{
+    keep_nl_ = true;
+    return *this;
+}
+
+
 std::string Log::GetMessage(uint8_t indent) const
 {
     if (indent == 0)
     {
-        return filter_ctrl_chars(message_, filter_nl_);
+        return filter_ctrl_chars(message_, !keep_nl_);
     }
 
-    std::string raw_message = filter_ctrl_chars(message_, filter_nl_);
+    std::string raw_message = filter_ctrl_chars(message_, !keep_nl_);
     auto lines = raw_message
                  | std::views::split('\n')
                  | std::views::transform([](auto &&r)
@@ -223,7 +227,7 @@ void Log::reset()
     session_token.clear();
     message_.clear();
     format = Format::AUTO;
-    filter_nl_ = false;
+    keep_nl_ = false;
 }
 
 
@@ -334,7 +338,7 @@ Log parse_dict(GVariant *logevent)
     {
         auto session_token = glib2::Dict::Lookup<std::string>(logevent,
                                                               "log_session_token");
-        return Log(group, category, session_token, message);
+        return Log(group, category, session_token, message).KeepNL();
     }
     catch (const glib2::Utils::Exception &)
     {
@@ -342,7 +346,7 @@ Log parse_dict(GVariant *logevent)
         // and then we treat this event as a "normal" LogEvent without
         // the sessoin token value
     }
-    return Log(group, category, message, false);
+    return Log(group, category, message).KeepNL();
 }
 
 
@@ -368,7 +372,7 @@ Log parse_tuple(GVariant *logevent, bool with_session_token)
         auto group = glib2::Value::Extract<LogGroup>(logevent, 0);
         auto category = glib2::Value::Extract<LogCategory>(logevent, 1);
         auto message = glib2::Value::Extract<std::string>(logevent, 2);
-        return Log(group, category, message, false);
+        return Log(group, category, message).KeepNL();
     }
     else
     {
@@ -377,7 +381,7 @@ Log parse_tuple(GVariant *logevent, bool with_session_token)
         auto category = glib2::Value::Extract<LogCategory>(logevent, 1);
         auto session_token = glib2::Value::Extract<std::string>(logevent, 2);
         auto message = glib2::Value::Extract<std::string>(logevent, 3);
-        return Log(group, category, session_token, message, false);
+        return Log(group, category, session_token, message).KeepNL();
     }
 }
 
@@ -389,22 +393,20 @@ Log parse_tuple(GVariant *logevent, bool with_session_token)
 Log ParseLog(const std::string &grp_s,
              const std::string &ctg_s,
              const std::string &sess_token,
-             const std::string &msg,
-             bool filter_nl)
+             const std::string &msg)
 {
     auto [grp, ctg] = parse_group_category(grp_s, ctg_s);
     return sess_token.empty()
-               ? Log(grp, ctg, msg, filter_nl)
-               : Log(grp, ctg, sess_token, msg, filter_nl);
+               ? Log(grp, ctg, msg)
+               : Log(grp, ctg, sess_token, msg);
 }
 
 
 Log ParseLog(const std::string &grp_s,
              const std::string &ctg_s,
-             const std::string &msg,
-             bool filter_nl)
+             const std::string &msg)
 {
-    return ParseLog(grp_s, ctg_s, {}, msg, filter_nl);
+    return ParseLog(grp_s, ctg_s, {}, msg);
 }
 
 
