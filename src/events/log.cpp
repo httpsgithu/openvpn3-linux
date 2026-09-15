@@ -111,9 +111,10 @@ void Log::SetDBusSender(DBus::Signals::Target::Ptr sndr)
 }
 
 
-void Log::AddLogTag(LogTag::Ptr tag) noexcept
+Log &Log::AddLogTag(LogTag::Ptr tag) noexcept
 {
     logtag = tag;
+    return *this;
 }
 
 

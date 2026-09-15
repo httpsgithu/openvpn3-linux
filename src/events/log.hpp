@@ -109,8 +109,10 @@ struct Log
      *  Adds a LogTag which will prefix the log message
      *
      * @param tag  LogTag object to use
+     *
+     * @return Log
      */
-    void AddLogTag(LogTag::Ptr tag) noexcept;
+    Log &AddLogTag(LogTag::Ptr tag) noexcept;
 
     /**
      *  Retrieve the currently set LogTag object
