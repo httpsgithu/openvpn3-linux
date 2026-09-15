@@ -26,8 +26,7 @@
 LogSender::LogSender(LogWriter *lgwr)
     : DBus::Signals::Group(nullptr, "/", ""),
       Log::EventFilter(6),
-      logwr(lgwr),
-      dbus_enabled(false)
+      logwr(lgwr)
 {
 }
 
@@ -41,8 +40,7 @@ LogSender::LogSender(DBus::Connection::Ptr dbuscon,
     : DBus::Signals::Group(dbuscon, objpath, interf),
       Log::EventFilter(3),
       logwr(lgwr),
-      log_group(lgroup),
-      dbus_enabled(true)
+      log_group(lgroup)
 {
     RegisterSignal("Log",
                    Events::Log::SignalDeclaration(session_token));
@@ -85,12 +83,6 @@ void LogSender::Log(const Events::Log &logev, bool no_duplicates)
     if (logwr)
     {
         logwr->Write(logev);
-    }
-
-    if (!dbus_enabled)
-    {
-        log_buffer.push_back(logev);
-        return;
     }
 
     SendGVariant("Log", logev.GetGVariantTuple());
@@ -157,19 +149,6 @@ void LogSender::LogFATAL(const std::string &msg)
 Events::Log LogSender::GetLastLogEvent() const
 {
     return last_logevent;
-}
-
-
-std::vector<Events::Log> LogSender::GetLogBuffer()
-{
-    if (dbus_enabled)
-    {
-        throw std::runtime_error("LogSender::GetLogBuffer() unavailable with D-Bus logging enabled");
-    }
-
-    std::vector<Events::Log> ret = std::move(log_buffer);
-    log_buffer.clear();
-    return ret;
 }
 
 

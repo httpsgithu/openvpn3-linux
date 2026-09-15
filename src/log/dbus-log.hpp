@@ -86,24 +86,6 @@ class LogSender : public DBus::Signals::Group,
     Events::Log GetLastLogEvent() const;
 
     /**
-     *  Retrieve all collected log events
-     *
-     *  When the LogSender object has been constructed without
-     *  a D-Bus connection, this LogSender object will collect
-     *  all the log events instead.  These events can be retrieved
-     *  from this method.
-     *
-     *  This will only work if the LogSender::LogSender(LogWriter *)
-     *  constructor has been used.   If not it will throw a
-     *  std::runtime_error exception.
-     *
-     * @return std::vector<Events::Log>
-     * @throws std::runtime_error
-     */
-    std::vector<Events::Log> GetLogBuffer();
-
-
-    /**
      *  Retrieve a pointer to the configured LogWriter object
      *
      * @return LogWriter*
@@ -117,7 +99,5 @@ class LogSender : public DBus::Signals::Group,
 
 
   private:
-    bool dbus_enabled;
     Events::Log last_logevent;
-    std::vector<Events::Log> log_buffer; //< Only used when dbus_enabled == false
 };
