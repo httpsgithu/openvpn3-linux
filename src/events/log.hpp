@@ -157,11 +157,14 @@ struct Log
     void reset();
 
     /**
-     *  Checks if the LogEvent object is empty
+     *  Checks if the Events::Log object is empty
      *
+     * @param only_message (optional) If true, only consider the
+     *                     message field and ignore log category/group
+     *                     values
      * @return Returns true if it is empty/unused
      */
-    bool empty() const;
+    bool empty(bool only_message = false) const;
 
     /**
      *  Extract a formatted std::string of the log event.

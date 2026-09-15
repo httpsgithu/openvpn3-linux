@@ -191,8 +191,13 @@ void Log::reset()
 }
 
 
-bool Log::empty() const
+bool Log::empty(bool only_message) const
 {
+    if (only_message)
+    {
+        return message.empty();
+    }
+
     return (LogGroup::UNDEFINED == group)
            && (LogCategory::UNDEFINED == category)
            && session_token.empty()

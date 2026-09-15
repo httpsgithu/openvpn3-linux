@@ -37,7 +37,7 @@ std::string test_empty(const Events::Log &ev, const bool expect)
 
     r = (LogGroup::UNDEFINED == ev.group
          && LogCategory::UNDEFINED == ev.category
-         && ev.message.empty());
+         && ev.empty(true));
     if (expect != r)
     {
         return std::string("test_empty() - Member check:  ")
