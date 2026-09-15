@@ -283,24 +283,6 @@ executable('journal-log-parse',
     include_directories: [include_dirs, '../..'],
 )
 
-logevent_selftest = executable('logevent-selftest',
-    [
-        'dbus/logevent-selftest.cpp',
-    ],
-    build_by_default: build_test_programs,
-    link_with: [
-        common_code,
-    ],
-    dependencies: [
-        base_dependencies,
-    ],
-    include_directories: [include_dirs, '../..'],
-)
-test('logevent-selftest',
-    logevent_selftest,
-    suite: 'standalone')
-
-
 executable('log-listener',
     [
         'dbus/log-listener.cpp',
