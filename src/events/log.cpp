@@ -280,6 +280,12 @@ bool Log::operator!=(const Log &compare) const
 }
 
 
+Events::Log::operator std::string() const
+{
+    return str(4);
+}
+
+
 namespace {
 /**
  *  Parses group and category strings to the appropriate LogGroup

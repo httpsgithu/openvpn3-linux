@@ -203,6 +203,20 @@ struct Log
     bool operator==(const Log &compare) const;
     bool operator!=(const Log &compare) const;
 
+
+    /**
+     *  std::string operator()
+     *
+     *  Retrieve a human readable string when this object is treated as
+     *  a std::string
+     *
+     *  This is similar to operator<<(), but it will indent multiple lines
+     *  with 4 spaces.
+     *
+     * @return std::string
+     */
+    operator std::string() const;
+
     /**
      *  Makes it possible to write LogEvents in a readable format
      *  via iostreams, such as 'std::cout << event', where event is a
